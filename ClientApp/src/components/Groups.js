@@ -30,27 +30,22 @@ export class Groups extends Component {
     }
 
     //--
-    static renderGroupsTable(groups) {
+    renderGroupsTable() {
         return(
             <div>
-            <h2>Welcome {this.state.user}</h2>
+            <h2>Welcome</h2>
             <table className='table table-striped' aria-labelledby="tabelLabel">
             <thead>
               <tr>
                 <th>Group</th>
-                <th>Spots</th>
-                <th>Owner</th>
-                <th>Members</th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
-              {groups.map(group =>
-                <tr key={group.date}>
-                  <td>{group.date}</td>
+              {this.state.groups.map(group =>
+                <tr key={group.id}>
+                  
                   <td>{group.name}</td>
-                  <td>{group.owner}</td>
-                  <td>{group.lastModified}</td>
+                 
                 </tr>
               )}
             </tbody>
@@ -63,7 +58,7 @@ export class Groups extends Component {
     render() {
         let contents = this.state.loading ? 
             <p><em>Loading...{emojis[0].emoji}</em></p> : 
-            Groups.renderGroupsTable(this.state.groups);
+            this.renderGroupsTable();
 
         return (
             <div>
@@ -77,19 +72,17 @@ export class Groups extends Component {
     //--
     async populateGroupData() {
         const token = await authService.getAccessToken();
-        const response = await fetch('groups', {
+        const response = await fetch('api/groups', {
             headers: 
                 !token ? 
                 {} : 
                 { 'Authorization': `Bearer ${token}` }
         });
-        try {
-            const data = await response.json();
-            if (data) {
-                this.setState({ groups: data, loading: false });
-            }
-        } catch {
-            //..
+        
+        const data = await response.json();
+        console.log("data: ", data);
+        if (data) {
+            this.setState({ groups: data, loading: false });
         }
     }
 

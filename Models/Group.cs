@@ -1,3 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
+using Microsoft.Extensions.Hosting.Internal;
+
 namespace SpotOps.Models
 {
     public class Group
@@ -6,6 +10,7 @@ namespace SpotOps.Models
         
         public string Name { get; set; }
         
+        public ICollection<ApplicationUser> Users { get; set; }
         
     }
 }

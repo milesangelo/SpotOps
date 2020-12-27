@@ -17,5 +17,10 @@ namespace SpotOps.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+        
+        public DbSet<ApplicationUser> Users { get; set; }
+        
+        public DbSet<Group> Groups { get; set; }
+        
     }
 }
