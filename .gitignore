@@ -28,6 +28,9 @@ Obj/
 .vs/
 /wwwroot/dist/
 
+# Rider IDE
+.idea/
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
