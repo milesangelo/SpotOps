@@ -18,22 +18,31 @@ const emojis = [
 
 export class Groups extends Component {
 
-    //--
+    /**
+     * 
+     * @param {} props 
+     */
     constructor(props) {
         super(props);
         this.state = { user: authService.getUser(), groups: [], loading: true };
     };
     
-    //--
+    /**
+     * 
+     * 
+     */
     componentDidMount() {
         this.populateGroupData();
     }
 
-    //--
+    /**
+     * 
+     * 
+     */
     renderGroupsTable() {
         return(
             <div>
-            <h2>Welcome</h2>
+            <h2>Welcome {emojis[2].name}</h2>
             <table className='table table-striped' aria-labelledby="tabelLabel">
             <thead>
               <tr>
@@ -43,9 +52,8 @@ export class Groups extends Component {
             <tbody>
               {this.state.groups.map(group =>
                 <tr key={group.id}>
-                  
                   <td>{group.name}</td>
-                 
+                  <td>{group.memberCount}</td>
                 </tr>
               )}
             </tbody>
@@ -54,7 +62,10 @@ export class Groups extends Component {
         );   
     }
 
-    //--
+    /**
+     * Renders a loading warning if we are waiting for Get response.
+     * Otherwise, we render the current users groups.
+     */
     render() {
         let contents = this.state.loading ? 
             <p><em>Loading...{emojis[0].emoji}</em></p> : 
@@ -69,21 +80,21 @@ export class Groups extends Component {
         );
     }
 
-    //--
-    async populateGroupData() {
+    /**
+     * 
+     * 
+     */
+    async populateGroupData() {    
         const token = await authService.getAccessToken();
         const response = await fetch('api/groups', {
             headers: 
-                !token ? 
-                {} : 
-                { 'Authorization': `Bearer ${token}` }
+                 !token ? 
+                 {} : 
+                 { 'Authorization': `Bearer ${token}` }
         });
-        
         const data = await response.json();
-        console.log("data: ", data);
-        if (data) {
+          if (data) {
             this.setState({ groups: data, loading: false });
         }
     }
-
 }

@@ -11,7 +11,7 @@ namespace SpotOps.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api/groups")]
     public class GroupsController : ControllerBase
     {
         /// <summary>
@@ -38,9 +38,13 @@ namespace SpotOps.Controllers
             var currentUserId = User
                 .FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             
-            return _db.Groups.Where(grp => grp.Users
-                    .Any(user => user.Id == currentUserId))
+            var groups = _db.Groups
+                .Where(grp => 
+                    grp.Users
+                        .Any(user => user.Id == currentUserId))
                 .ToList();
+            
+            return groups;
         }
     }
 }
