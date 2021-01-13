@@ -35,8 +35,9 @@ export default class GroupList extends Component {
                     <thead>
                         <tr>
                             <th style={{ width: '25% '}}>Name</th>
-                            <th style={{ width: '25% '}}>Owner</th>
-                            <th style={{ width: '10% '}}>Date Created</th>
+                            <th style={{ width: '20% '}}>Owner</th>
+                            <th style={{ width: '15% '}}>Date Created</th>
+                            <th style={{ width: '15% '}}>Date Modified</th>
                             <th style={{ width: '12.5%'}}># of Members</th>
                             <th style={{ width: '12.5%' }}># of Spots</th>
                             <th style={{ width: '10%' }}></th>
@@ -48,6 +49,7 @@ export default class GroupList extends Component {
                                 <td>{grp.name}</td>
                                 <td>{grp.ownerId}</td>
                                 <td>{grp.dateCreated}</td>
+                                <td>{grp.dateModified}</td>
                                 <td>{grp.numMembers}</td>
                                 <td>{grp.numSpots}</td>
                                 <td style={{ whiteSpace: 'nowrap' }}>
