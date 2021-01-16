@@ -46,7 +46,6 @@ class GroupService {
         this.mockGroups[groupIndexToUpdate].numMembers = fields.numMembers;
         this.mockGroups[groupIndexToUpdate].numSpots = fields.numSpots;
         this.mockGroups[groupIndexToUpdate].dateModified = new Date().toISOString();
-
     }
 
     getMockData() {

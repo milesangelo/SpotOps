@@ -33,12 +33,14 @@ function GroupForm({ history, match }) {
         console.log('createGroup: ', fields)
         groupService.createGroup(fields)
         setSubmitting(false)
+        history.push('.')
     }
 
     function updateGroup(id, fields, setSubmitting) {
         console.log('updateGroup: ', fields, ' id: ', id)
         groupService.updateGroup(id, fields)
         setSubmitting(false)
+        history.push('..')
     }
 
     function onSubmit(fields, {setStatus, setSubmitting}) {
