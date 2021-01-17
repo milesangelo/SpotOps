@@ -11,7 +11,7 @@ export default class GroupRoutes extends Component {
 
         return (
             <Switch>
-                <Route exact path={path} component={GroupList} />
+                <GroupList exact path={path} component={GroupList} />
                 <Route exact path={`${path}/add`} component={GroupForm} />
                 <Route path={`${path}/edit/:id`} component={GroupForm} />
             </Switch>           

@@ -20,33 +20,27 @@ import authService from '../api-authorization/AuthorizeService'
 // }
 
 function GroupForm({ history, match }) {
-
     const [user, setUser] = useState('')
     const [group, setGroup] = useState('')
 
     const { id } = match.params;
     const isAddMode = !id;
 
-  
-
-    function createGroup(fields, setSubmitting) {
+    const createGroup = (fields, setSubmitting) => {
         console.log('createGroup: ', fields)
         groupService.createGroup(fields)
+        history.push('.')
         setSubmitting(false)
     }
 
-    function updateGroup(id, fields, setSubmitting) {
-        console.log('updateGroup: ', fields, ' id: ', id)
+    const updateGroup = (id, fields, setSubmitting) => {
         groupService.updateGroup(id, fields)
+        history.push('..')
         setSubmitting(false)
     }
 
-    function onSubmit(fields, {setStatus, setSubmitting}) {
-
+    const onSubmit = (fields, {setStatus, setSubmitting}) => {
         setStatus();
-        console.log('onSubmit called')
-        console.log('fields: ', fields)
-
         if (isAddMode) {
             createGroup(fields, setSubmitting);
         } else {
@@ -61,23 +55,16 @@ function GroupForm({ history, match }) {
         }
     }
 
-
     const getGroupById = async(id) => {
-        console.log('getGroupById: ', id)
         const grp = await groupService.getGroupById(id);
-        //console.log('')
         if (grp)
         {
-            console.log('group service returned ', grp)
             setGroup(grp);
         }
     }
 
-
     useEffect(() => {
         if (!isAddMode) {
-            //Implement this.
-            console.log('useEffect: getting group by id ', id)
             getGroupById(id);
             
             // groupService.getById(id).then(grp => {
@@ -88,17 +75,12 @@ function GroupForm({ history, match }) {
             // });
         }
         if (!user){
-            console.log('useEffect: getting user..')
             getUser();
         }
     }, []);
 
-    /**
-     * 
-     * 
-     */
+
     return ( 
-        
         <Formik 
             enableReinitialize={true}
             initialValues={{ 
@@ -107,7 +89,7 @@ function GroupForm({ history, match }) {
             }}
             onSubmit={onSubmit}
         >
-        {({ values, isSubmitting, errors, touched, setFieldValue}) => {
+        {({ values, isSubmitting, errors, touched }) => {
             return (
                 <Form>
                 <div>

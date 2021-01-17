@@ -1,33 +1,43 @@
-import React, { Component } from 'react'
+import React, { Component, useState} from 'react'
 import { Link } from 'react-router-dom';
 import groupService from './GroupService';
+import DeleteButton from '../buttons/DeleteButton'
 
-export default class GroupList extends Component {
 
-    /**
-     * 
-     * @param {*} props 
-     */
-    constructor(props) {
 
-        super(props);
-        
-        this.state = {
-            groups: groupService.getGroupsList(),
-            clickedAddGroup: false,
-            buttonTest:false
-        }
+
+
+const GroupList = (props) => {
+
+    const [groups, setGroups] = useState(groupService.getGroupsList())
+    
+    const deleteGroup = (id) => {
+        console.log('grouplist deleteGroup')
+        groupService.deleteGroup(id)
+        setGroups(groupService.getGroupsList())
+    }
+    
+    
+    
+    const render = (props) => {
+        const { path } = props
+
+        return (
+            <div>
+                <Link to={`${path}/add`} className="btn btn-sm btn-success mb-2" >Add Group</Link> 
+                {renderGroupList(props)}
+            </div>
+        )
     }
 
     /**
      * 
      * 
      */
-    renderGroupList(){
+    const renderGroupList = (props) => {
+        const { path } = props
 
-        const { path } = this.props.match;
-
-        console.log("GroupList.renderGroupList() ", this.state.groups);
+        console.log("GroupList.renderGroupList() ", groups);
 
         return (
             <div>
@@ -44,7 +54,7 @@ export default class GroupList extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.groups && this.state.groups.map(grp =>
+                        {groups && groups.map(grp =>
                             <tr key={grp.id}>
                                 <td>{grp.name}</td>
                                 <td>{grp.ownerId}</td>
@@ -54,28 +64,24 @@ export default class GroupList extends Component {
                                 <td>{grp.numSpots}</td>
                                 <td style={{ whiteSpace: 'nowrap' }}>
                                     <Link to={`${path}/edit/${grp.id}`} className="btn btn-sm btn-primary mr-1" >Edit</Link> 
-                                    <button 
-                                        onClick={this.deleteGroup} 
-                                        className="btn btn-sm btn-danger btn-delete-group" 
-                                        name="addGroup"
-                                        disabled={grp.isDeleting}>
-                                            {grp.isDeleting
-                                                ? <span className="spinner-border spinner-border-sm"></span>
-                                                : <span>Delete</span>
-                                            }
-                                    </button>
+                                    <DeleteButton 
+                                        name="Remove" 
+                                        onClick={deleteGroup} 
+                                        index={grp.id} />
+                                       
+                                    
                                 </td>
                             </tr>
 
                         )}
-                        {!this.state.groups &&
+                        {!groups &&
                             <tr>
                                 <td colSpan="7" className="text-center">
                                     <div className="spinner-border spinner-border-lg align-center"></div>
                                 </td>
                             </tr>
                         }
-                        {this.state.groups && !this.state.groups.length &&
+                        {groups && !groups.length &&
                             <tr>
                                 <td colSpan="7" className="text-center">
                                     <div className="p-2">No Groups to Display</div>
@@ -85,27 +91,13 @@ export default class GroupList extends Component {
                     </tbody>
                 </table>
             </div>
-
-
-
         );
     }
 
-    
-    /**
-     * 
-     * 
-     */
-    render() {
-        const { path } = this.props.match;
 
-        return (
-            <div>
-                <Link to={`${path}/add`} className="btn btn-sm btn-success mb-2" >Add Group</Link> 
-                <p>TESTING GROUPSLIST</p>
-                {this.renderGroupList()}
-            </div>
-        )
-    }
-    
+    return(
+        render(props)
+    )
 }
+
+export default  GroupList;
