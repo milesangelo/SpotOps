@@ -49,6 +49,14 @@ class GroupService {
 
     }
 
+    deleteGroup(id) {
+        let grpToDelete = this.mockGroups.find(grp => grp.id === parseInt(id))
+        console.log('Deleting grp #', id, ': ', grpToDelete);
+        this.mockGroups = this.mockGroups.filter(grp => grp.id != parseInt(id));
+        console.log()
+    }
+
+
     getMockData() {
         return this.mockGroups;
     }
