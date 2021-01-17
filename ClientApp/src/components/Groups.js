@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
-import authService from './api-authorization/AuthorizeService';
 
 const emojis = [
     {

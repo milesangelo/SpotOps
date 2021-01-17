@@ -1,12 +1,14 @@
 class GroupModel {
-    constructor(properties)
+    constructor(grp)
     {
-        this.id = properties.id;
-        this.name = properties.name;
-        this.dateCreated = properties.dateCreated;
-        this.dateModified = properties.dateModified;
-        this.numMembers = properties.numMembers;
-        this.numSpots = properties.numSpots;
+        console.log('new GroupModel(): ', grp)
+        this.id = grp.id;
+        this.name = grp.name;
+        this.owner = grp.name;
+        this.dateCreated = grp.dateCreated;
+        this.dateModified = grp.dateModified;
+        this.numMembers = grp.numMembers;
+        this.numSpots = grp.numSpots;
     }
 }
 

@@ -79,7 +79,7 @@ namespace SpotOps
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                    pattern: "api/{controller}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
 

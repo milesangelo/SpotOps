@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpotOps.Data;
 using SpotOps.Models;
+using SpotOps.ResponseModels;
 
 namespace SpotOps.Controllers
 {
@@ -27,24 +29,50 @@ namespace SpotOps.Controllers
         {
             _db = db;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("get")]
         public List<Group> Get()
         {
-            var currentUserId = User
-                .FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            
             var groups = _db.Groups
-                .Where(grp => 
-                    grp.Users
-                        .Any(user => user.Id == currentUserId))
                 .ToList();
-            
+
             return groups;
+        }
+
+        // /// <summary>
+        // /// 
+        // /// </summary>
+        // /// <returns></returns>
+        // [HttpGet("get/{id}")]
+        // public Group GetById(int id)
+        // {
+        //     var group = _db.Groups
+        //         .FirstOrDefault(grp =>
+        //             grp.Id == id);
+        //
+        //     return group;
+        // }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grp"></param>
+        /// <returns></returns>
+        [HttpPost("post")]
+        public IActionResult Post([FromBody] GroupResponse grp)
+        {
+            var newGroup = new Group
+            {
+                Name = grp.Name
+            };
+
+            _db.Groups.Add(newGroup);
+            _db.SaveChanges();
+            return Ok();
         }
     }
 }
