@@ -29,16 +29,18 @@ function GroupForm({ history, match }) {
     const createGroup = (fields, setSubmitting) => {
         console.log('createGroup: ', fields)
         groupService.createGroup(fields)
-        history.push('.')
+            .then(() => {
+                console.log('createdGroup.then()')
+                history.push('.')
+            })
+
         setSubmitting(false)
-        history.push('.')
     }
 
     const updateGroup = (id, fields, setSubmitting) => {
         groupService.updateGroup(id, fields)
-        history.push('..')
         setSubmitting(false)
-        history.push('..')
+        
     }
 
     const onSubmit = (fields, {setStatus, setSubmitting}) => {
@@ -87,7 +89,7 @@ function GroupForm({ history, match }) {
             enableReinitialize={true}
             initialValues={{ 
                 owner : user.name || '',
-                groupName : (group && group.name) || ''
+                name : (group && group.name) || ''
             }}
             onSubmit={onSubmit}
         >
@@ -98,9 +100,9 @@ function GroupForm({ history, match }) {
                     <h1>{isAddMode ? 'Add Group' : 'Edit Group'}</h1>
                     <div className="form-row">
                         <div className="form-group col-5">
-                            <label>Group Name</label>
+                            <label>Name</label>
                             <Field 
-                                name="groupName" 
+                                name="name" 
                                 type="text" 
                                 className={'form-control'} />
                         </div>
@@ -136,12 +138,10 @@ function GroupForm({ history, match }) {
 
                     <div className="form-row">
                         <div className="form-group">
-                            
                             <button type="submit" disabled={isSubmitting} className="btn btn-primary">
                                 {isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
                                     Save
                             </button>
-                            
                             <Link to={isAddMode ? '.' : '..'} className="btn btn-link">Cancel</Link>
                         </div>
                     </div>

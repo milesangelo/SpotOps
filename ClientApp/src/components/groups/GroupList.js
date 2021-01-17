@@ -1,4 +1,4 @@
-import React, { Component, useState} from 'react'
+import React, { Component, useEffect, useState} from 'react'
 import { Link } from 'react-router-dom';
 import groupService from './GroupService';
 import DeleteButton from '../buttons/DeleteButton'
@@ -9,15 +9,17 @@ import DeleteButton from '../buttons/DeleteButton'
 
 const GroupList = (props) => {
 
-    const [groups, setGroups] = useState(groupService.getGroupsList())
+    const [groups, setGroups] = useState(null)
     
     const deleteGroup = (id) => {
         console.log('grouplist deleteGroup')
         groupService.deleteGroup(id)
-        setGroups(groupService.getGroupsList())
+        setGroups(groupService.getAll())
     }
     
-    
+    useEffect(() => {
+        groupService.getAll().then(grp => setGroups(grp))
+    }, [])
     
     const render = (props) => {
         const { path } = props
@@ -57,7 +59,7 @@ const GroupList = (props) => {
                         {groups && groups.map(grp =>
                             <tr key={grp.id}>
                                 <td>{grp.name}</td>
-                                <td>{grp.ownerId}</td>
+                                <td>{grp.owner}</td>
                                 <td>{grp.dateCreated}</td>
                                 <td>{grp.dateModified}</td>
                                 <td>{grp.numMembers}</td>
