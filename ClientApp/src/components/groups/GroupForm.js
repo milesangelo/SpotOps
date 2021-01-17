@@ -31,12 +31,14 @@ function GroupForm({ history, match }) {
         groupService.createGroup(fields)
         history.push('.')
         setSubmitting(false)
+        history.push('.')
     }
 
     const updateGroup = (id, fields, setSubmitting) => {
         groupService.updateGroup(id, fields)
         history.push('..')
         setSubmitting(false)
+        history.push('..')
     }
 
     const onSubmit = (fields, {setStatus, setSubmitting}) => {
