@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SpotOps.Data;
 using SpotOps.Models;
@@ -73,6 +74,35 @@ namespace SpotOps.Controllers
             _db.Groups.Add(newGroup);
             _db.SaveChanges();
             return Ok();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("delete/{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                //var groupToDelete = await groupService.GetGroup(id);
+                var groupToDelete = _db.Groups.First(grp => grp.Id == id);
+
+                if (groupToDelete == null)
+                {
+                    return NotFound($"Group with id = {id} was not found.");
+                }
+
+                _db.Groups.Remove(groupToDelete);
+                _db.SaveChanges();
+                
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }
