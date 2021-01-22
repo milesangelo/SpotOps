@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState} from 'react'
+import React, { useEffect, useState} from 'react'
 import { Link } from 'react-router-dom';
 import groupService from './GroupService';
 import DeleteButton from '../buttons/DeleteButton'
@@ -10,17 +10,33 @@ import DeleteButton from '../buttons/DeleteButton'
 const GroupList = (props) => {
 
     const [groups, setGroups] = useState(null)
-    
+    const [deletingGroup, setDeletingGroup] = useState([null, 0])
+
+    /**
+     * 
+     * @param {*} id 
+     */
     const deleteGroup = (id) => {
-        console.log('grouplist deleteGroup')
-        groupService.deleteGroup(id)
-        setGroups(groupService.getAll())
+        setDeletingGroup([true, id])
     }
     
+
     useEffect(() => {
+        if (deletingGroup[0] == true) {
+            console.log('useEffect deletingGroup is true')
+            console.log()
+            groupService.deleteGroup(deletingGroup[1])
+            .then(() => {
+                console.log('then deleted group')
+                setDeletingGroup([false,0])
+            })
+        }
+        else {
+            console.log('useEffect deletingGroup is false')
+        }
         groupService.getAll().then(grp => setGroups(grp))
-    }, [])
-    
+    }, [deletingGroup])
+ 
     const render = (props) => {
         const { path } = props
 
@@ -69,7 +85,8 @@ const GroupList = (props) => {
                                     <DeleteButton 
                                         name="Remove" 
                                         onClick={deleteGroup} 
-                                        index={grp.id} />
+                                        index={grp.id}
+                                        isDeleting={deletingGroup[0]} />
                                        
                                     
                                 </td>
@@ -102,4 +119,4 @@ const GroupList = (props) => {
     )
 }
 
-export default  GroupList;
+export default GroupList;

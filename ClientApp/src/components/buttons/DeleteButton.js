@@ -4,11 +4,18 @@ import React from 'react'
 const DeleteButton = (props) => {
     const { isDeleting, name, onClick, index } = props;
     const btnText = name + " " + index
+
+
+    console.log('DeleteButton')
     return (
         <button 
             className="btn btn-sm btn-danger"
             name={name}
-            onClick={() => { onClick(index) }}
+            onClick={() => { 
+                console.log('DeleteButton calling onClick() ', index);
+                onClick(index);
+                // console.log('DeleteButton calling onClick() ', index);
+             }}
             disabled={isDeleting}
         >
             {isDeleting
