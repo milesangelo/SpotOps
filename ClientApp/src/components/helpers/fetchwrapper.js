@@ -1,11 +1,11 @@
 import authService from '../api-authorization/AuthorizeService'
 
-export const fetchWrapper2 = {
-    //get,
-    //post,
-    put,
-    delete: _delete
-};
+// export const fetchWrapper2 = {
+//     //get,
+//     //post,
+//     put,
+//     delete: _delete
+// };
 
 class FetchWrapper {
     
@@ -47,6 +47,17 @@ class FetchWrapper {
         // return await fetch(fullUrl, requestOptions)
         //     .then(res => res.json())
            // .then(data => data);
+    }
+
+    async delete(url, id) {
+        let fullUrl = url.concat("/delete").concat("/", id)
+        console.log('fetchWrapper.delete() ', fullUrl, ' ', id)
+
+        const token = await authService.getAccessToken();
+        const requestOptions = this.getRequestOptionsFor('DELETE', token, id);
+        const response = await fetch(fullUrl, requestOptions);
+        console.log('delete response: ', response);
+        //const data = await response.json();
     }
 
     /**
@@ -104,23 +115,23 @@ const fetchWrapper = new FetchWrapper()
 
 export default fetchWrapper;
 
-function post(url, body) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-    };
-    return fetch(url, requestOptions).then(handleResponse);
-}
+// function post(url, body) {
+//     const requestOptions = {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(body)
+//     };
+//     return fetch(url, requestOptions).then(handleResponse);
+// }
 
-function put(url, body) {
-    const requestOptions = {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-    };
-    return fetch(url, requestOptions).then(handleResponse);    
-}
+// function put(url, body) {
+//     const requestOptions = {
+//         method: 'PUT',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(body)
+//     };
+//     return fetch(url, requestOptions).then(handleResponse);    
+// }
 
 // prefixed with underscored because delete is a reserved word in javascript
 function _delete(url) {

@@ -1,8 +1,5 @@
-import GroupList from './GroupList';
 import GroupModel from './GroupModel';
-import authService from '../api-authorization/AuthorizeService';
 import fetchWrapper from '../helpers/fetchwrapper'
-
 
 class GroupService {
 
@@ -103,12 +100,12 @@ class GroupService {
 
 
 
-        this.mockGroups.push(new GroupModel({
-            id : this.mockGroups.length+1,
-            name : fields.name,
-            dateCreated :  new Date().toISOString()
-        }));
-        console.log('mockGroups.len after ', this.mockGroups.length)
+        // this.mockGroups.push(new GroupModel({
+        //     id : this.mockGroups.length+1,
+        //     name : fields.name,
+        //     dateCreated :  new Date().toISOString()
+        // }));
+        // console.log('mockGroups.len after ', this.mockGroups.length)
     }
 
     updateGroup(id, fields) {
@@ -122,10 +119,19 @@ class GroupService {
     }
 
     deleteGroup(id) {
-        let grpToDelete = this.mockGroups.find(grp => grp.id === parseInt(id))
-        console.log('Deleting grp #', id, ': ', grpToDelete);
-        this.mockGroups = this.mockGroups.filter(grp => grp.id != parseInt(id));
-        console.log()
+        console.log('GroupService.deleteGroup() ', id)
+    }
+
+    
+    deleteGroup(id) {
+        //let grpToDelete = this.mockGroups.find(grp => grp.id === parseInt(id))
+
+        console.log('GroupService.deleteGroup() ', id);//, ': ', grpToDelete);
+        //console.trace()
+
+        return fetchWrapper.delete(this.url, id);
+        // this.mockGroups = this.mockGroups.filter(grp => grp.id != parseInt(id));
+        // console.log()
     }
 
 
