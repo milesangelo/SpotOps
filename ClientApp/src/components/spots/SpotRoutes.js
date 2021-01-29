@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Switch, Route } from 'react-router-dom';
 import SpotForm from './SpotForm'
+import SpotList from './SpotList'
 
 export default class SpotRoutes extends Component {
 
@@ -19,6 +20,7 @@ export default class SpotRoutes extends Component {
 
         return (
                 <Switch>
+                    <Route exact path={path} component={SpotList} />
                     <Route exact path={path} component={SpotForm} />
                 </Switch>           
             )
