@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form } from 'formik';
 import authService from '../api-authorization/AuthorizeService'
 
 function SpotForm({ history, match }) {
