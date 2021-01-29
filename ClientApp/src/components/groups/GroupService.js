@@ -8,28 +8,26 @@ class GroupService {
 
     constructor()
     {
-        this.initializeMockData()
+       // this.initializeMockData()
     }
 
-    initializeMockData() {
-        for (var i = 0; i < 10; ++i) {
-            var newGroup = new GroupModel({
-                id : i,
-                name : `group ${i}`, 
-                dateCreated : new Date().toISOString(), 
-                dateModified : new Date().toISOString(), 
-                numMembers : `${5%i*i}`, 
-                numSpots : `${16*i%37+i*6}` 
-            });
+    // initializeMockData() {
+    //     for (var i = 0; i < 10; ++i) {
+    //         var newGroup = new GroupModel({
+    //             id : i,
+    //             name : `group ${i}`, 
+    //             dateCreated : new Date().toISOString(), 
+    //             dateModified : new Date().toISOString(), 
+    //             numMembers : `${5%i*i}`, 
+    //             numSpots : `${16*i%37+i*6}` 
+    //         });
 
-            this.mockGroups.push(newGroup)
-        }
-    }
+    //         this.mockGroups.push(newGroup)
+    //     }
+    // }
 
     getGroupsList() {
         return fetchWrapper.get(this.url)
-        
-        //eturn this.getMockData()
     }
 
     getAll() {
@@ -109,19 +107,21 @@ class GroupService {
     }
 
     updateGroup(id, fields) {
-        let groupIndexToUpdate = this.mockGroups
-            .findIndex(grp => grp.id === parseInt(id));
+        console.log('GroupService.updateGroup() ', id, ' ', fields);//, ': ', grpToDelete);
 
-        this.mockGroups[groupIndexToUpdate].name = fields.name;
-        this.mockGroups[groupIndexToUpdate].numMembers = fields.numMembers;
-        this.mockGroups[groupIndexToUpdate].numSpots = fields.numSpots;
-        this.mockGroups[groupIndexToUpdate].dateModified = new Date().toISOString();
+        return fetchWrapper.put(this.url, id, fields);
+
+
+        // let groupIndexToUpdate = this.mockGroups
+        //     .findIndex(grp => grp.id === parseInt(id));
+
+        // this.mockGroups[groupIndexToUpdate].name = fields.name;
+        // this.mockGroups[groupIndexToUpdate].numMembers = fields.numMembers;
+        // this.mockGroups[groupIndexToUpdate].numSpots = fields.numSpots;
+        // this.mockGroups[groupIndexToUpdate].dateModified = new Date().toISOString();
     }
 
-    deleteGroup(id) {
-        console.log('GroupService.deleteGroup() ', id)
-    }
-
+    
     
     deleteGroup(id) {
         //let grpToDelete = this.mockGroups.find(grp => grp.id === parseInt(id))
@@ -155,11 +155,13 @@ class GroupService {
     }
 
     getGroupById(id) {
+        return fetchWrapper.getById(this.url, id);
+
         //console.log('GroupService.getGroupById: ', id, ' ', typeof id)
         //console.log('mockGroups.len ', this.mockGroups.length)
         //console.log('find: ', this.mockGroups.find(grp => grp.id === parseInt(id)))
         //this.mockGroups.forEach(grp => console.log(typeof grp.id));
-        return this.mockGroups.find(grp => grp.id === parseInt(id))
+        //return this.mockGroups.find(grp => grp.id === parseInt(id))
     }
 }
 

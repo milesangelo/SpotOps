@@ -10,25 +10,34 @@ import DeleteButton from '../buttons/DeleteButton'
 const GroupList = (props) => {
 
     const [groups, setGroups] = useState(null)
-    const [deletingGroup, setDeletingGroup] = useState([null, 0])
+    const [deletingGroup, setDeletingGroup] = useState({
+        isDeleting: false,
+        id: 0
+    })
 
     /**
      * 
      * @param {*} id 
      */
     const deleteGroup = (id) => {
-        setDeletingGroup([true, id])
+        setDeletingGroup({
+            isDeleting : true,
+            id : id
+        })
     }
     
 
     useEffect(() => {
-        if (deletingGroup[0] == true) {
+        if (deletingGroup.isDeleting === true) {
             console.log('useEffect deletingGroup is true')
             console.log()
-            groupService.deleteGroup(deletingGroup[1])
+            groupService.deleteGroup(deletingGroup.id)
             .then(() => {
                 console.log('then deleted group')
-                setDeletingGroup([false,0])
+                setDeletingGroup({ 
+                    isDeleting : false,
+                    id : 0
+                })
             })
         }
         else {
@@ -86,9 +95,7 @@ const GroupList = (props) => {
                                         name="Remove" 
                                         onClick={deleteGroup} 
                                         index={grp.id}
-                                        isDeleting={deletingGroup[0]} />
-                                       
-                                    
+                                        isDeleting={deletingGroup.isDeleting} />
                                 </td>
                             </tr>
 

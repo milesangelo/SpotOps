@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import groupService from './GroupService';
 import authService from '../api-authorization/AuthorizeService'
+import ReactJson from 'react-json-view';
 
 // const MyTextInput = ({ label, ...props }) => {
 //     // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -38,6 +39,7 @@ function GroupForm({ history, match }) {
     }
 
     const updateGroup = (id, fields, setSubmitting) => {
+        console.log('updateGroup')
         groupService.updateGroup(id, fields)
         setSubmitting(false)
         
@@ -61,14 +63,18 @@ function GroupForm({ history, match }) {
 
     const getGroupById = async(id) => {
         const grp = await groupService.getGroupById(id);
+        console.log('GroupForm.getGroupById(): ', grp)
         if (grp)
         {
+            console.log('GroupForm.getGroupById() ', grp)
             setGroup(grp);
         }
     }
 
     useEffect(() => {
+        console.log('isAddMode ', isAddMode)
         if (!isAddMode) {
+            
             getGroupById(id);
             
             // groupService.getById(id).then(grp => {
@@ -89,11 +95,16 @@ function GroupForm({ history, match }) {
             enableReinitialize={true}
             initialValues={{ 
                 owner : user.name || '',
-                name : (group && group.name) || ''
+                name : (group && group.name) || '',
+                group : {
+                    dateCreated: group.dateCreated,
+                    name : group.name
+                }
             }}
             onSubmit={onSubmit}
         >
         {({ values, isSubmitting, errors, touched }) => {
+            console.log('GroupForm.rendering...', values.group)
             return (
                 <Form>
                 <div>
@@ -129,8 +140,8 @@ function GroupForm({ history, match }) {
                                 className={'form-control-plaintext'} 
                                 text='date'
                                 name='dateCreated' 
-                                placeholder='when was this made?'
-                                value={values.dateCreated} 
+                                placeholder={values.group.dateCreated}
+                                value={new Date(values.group.dateCreated).toUTCString()} 
                                 readOnly 
                             />
                         </div>
@@ -145,8 +156,8 @@ function GroupForm({ history, match }) {
                             <Link to={isAddMode ? '.' : '..'} className="btn btn-link">Cancel</Link>
                         </div>
                     </div>
-                    <pre>{JSON.stringify(values, null, 2)}</pre>
-                    <pre>{JSON.stringify(user, null, 2)}</pre>
+                    {values && <ReactJson src={values} theme="monokai" />}
+                    {user && <ReactJson src={user} theme="monokai" />}
                 </div>
                 </Form>
             )}}
