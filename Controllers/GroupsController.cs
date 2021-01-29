@@ -44,19 +44,24 @@ namespace SpotOps.Controllers
             return groups;
         }
 
-        // /// <summary>
-        // /// 
-        // /// </summary>
-        // /// <returns></returns>
-        // [HttpGet("get/{id}")]
-        // public Group GetById(int id)
-        // {
-        //     var group = _db.Groups
-        //         .FirstOrDefault(grp =>
-        //             grp.Id == id);
-        //
-        //     return group;
-        // }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get/{id:int}")]
+        public IActionResult GetById(int id)
+        {
+            var group = _db.Groups
+                .FirstOrDefault(grp =>
+                    grp.Id == id);
+            
+            if (group == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(group);
+        }
 
         /// <summary>
         /// 
@@ -68,7 +73,10 @@ namespace SpotOps.Controllers
         {
             var newGroup = new Group
             {
-                Name = grp.Name
+                Name = grp.Name,
+                DateCreated = DateTime.Now,
+                DateModified = DateTime.Now
+                
             };
 
             _db.Groups.Add(newGroup);
@@ -95,6 +103,36 @@ namespace SpotOps.Controllers
                 }
 
                 _db.Groups.Remove(groupToDelete);
+                _db.SaveChanges();
+                
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        [HttpPut("update/{id:int}")]
+        public IActionResult Put(int id, [FromBody] Group group)
+        {
+            try
+            {
+                var groupToEdit = _db.Groups.First(grp => grp.Id == id);
+
+                if (groupToEdit == null)
+                {
+                    return NotFound($"Group with id = {id} was not found.");
+                }
+
+                groupToEdit.Name = group.Name;
+                groupToEdit.DateModified = DateTime.Now;
+                
                 _db.SaveChanges();
                 
                 return Ok();

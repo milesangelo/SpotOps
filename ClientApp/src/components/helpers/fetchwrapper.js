@@ -31,6 +31,16 @@ class FetchWrapper {
         
     }
 
+    async getById (url, id) {
+
+        let fullUrl = url.concat("/get").concat("/", id)
+        const token = await authService.getAccessToken();
+        const requestOptions = this.getRequestOptionsFor('GET', token);
+        const response = await fetch(fullUrl, requestOptions)
+        const data = await response.json()
+        return (data) ? data : {}
+    }
+
     async post(url, params) {
         
         let fullUrl = url.concat("/post")
@@ -59,6 +69,16 @@ class FetchWrapper {
         console.log('delete response: ', response);
         //const data = await response.json();
     }
+
+    async put(url, id, params) {
+        let fullUrl = url.concat("/update").concat("/", id)
+
+        const token = await authService.getAccessToken();
+        const requestOptions = this.getRequestOptionsFor('PUT', token, params);
+        const response = await fetch(fullUrl, requestOptions);
+        console.log('put response: ', response);
+    }
+
 
     /**
      * 
