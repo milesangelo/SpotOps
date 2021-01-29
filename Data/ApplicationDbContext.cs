@@ -12,15 +12,32 @@ namespace SpotOps.Data
 {
     public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="operationalStoreOptions"></param>
         public ApplicationDbContext(
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
+            
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<ApplicationUser> Users { get; set; }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<Group> Groups { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public DbSet<Spot> Spots { get; set; }
         
     }
 }

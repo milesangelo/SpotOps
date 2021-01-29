@@ -76,7 +76,6 @@ namespace SpotOps.Controllers
                 Name = grp.Name,
                 DateCreated = DateTime.Now,
                 DateModified = DateTime.Now
-                
             };
 
             _db.Groups.Add(newGroup);
