@@ -1,5 +1,5 @@
 import React from 'react';
-import fetchwrapper from '../helpers/fetchwrapper';
+import fetchwrapper from '../helpers/FetchWrapper';
 
 class SpotService {
 
@@ -29,9 +29,9 @@ class SpotService {
 
     getAll() {
         console.log('SpotService.getAll() ')
-        console.log(this.mockData)
-
-        return this.mockData;
+        //console.log(this.mockData)
+        return fetchwrapper.get(this.url);
+       // return this.mockData;
     }
 }
 
