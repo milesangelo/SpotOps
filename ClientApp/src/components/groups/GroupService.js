@@ -1,5 +1,5 @@
 import GroupModel from './GroupModel';
-import fetchWrapper from '../helpers/fetchwrapper'
+import fetchWrapper from '../helpers/FetchWrapper'
 
 class GroupService {
 

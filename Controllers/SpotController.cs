@@ -24,8 +24,14 @@ namespace SpotOps.Controllers
             _db = dbContext;
         }
 
-        [HttpGet("/get/{id:int}")]
+        [HttpGet("get/{id:int}")]
         public IActionResult GetById(int id)
+        {
+            return Ok();
+        }
+
+        [HttpGet("get")]
+        public IActionResult Get()
         {
             return Ok();
         }

@@ -23,7 +23,7 @@ class FetchWrapper {
         const response = await fetch(fullUrl, requestOptions)
         const data = await response.json()
 
-        return (data) ? data : {}
+        return (data) ? data : []
         
         // return await fetch(fullUrl, requestOptions)
         //     .then(res => res.json())
@@ -47,7 +47,7 @@ class FetchWrapper {
         console.log('fullUrl: ', fullUrl)
         const token = await authService.getAccessToken();
         const requestOptions = this.getRequestOptionsFor('POST', token, params);
-        const response = await fetch(fullUrl, requestOptions);
+        await fetch(fullUrl, requestOptions);
         //const data = await response.json();
 
         //return data;
@@ -154,24 +154,24 @@ export default fetchWrapper;
 // }
 
 // prefixed with underscored because delete is a reserved word in javascript
-function _delete(url) {
-    const requestOptions = {
-        method: 'DELETE'
-    };
-    return fetch(url, requestOptions).then(handleResponse);
-}
+// function _delete(url) {
+//     const requestOptions = {
+//         method: 'DELETE'
+//     };
+//     return fetch(url, requestOptions).then(handleResponse);
+// }
 
-// helper functions
+// // helper functions
 
-function handleResponse(response) {
-    return response.text().then(text => {
-        const data = text && JSON.parse(text);
+// function handleResponse(response) {
+//     return response.text().then(text => {
+//         const data = text && JSON.parse(text);
         
-        if (!response.ok) {
-            const error = (data && data.message) || response.statusText;
-            return Promise.reject(error);
-        }
+//         if (!response.ok) {
+//             const error = (data && data.message) || response.statusText;
+//             return Promise.reject(error);
+//         }
 
-        return data;
-    });
-}
+//         return data;
+//     });
+// }

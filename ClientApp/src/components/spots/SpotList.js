@@ -5,7 +5,7 @@ import spotService from './SpotService'
 
 const SpotList = () => {
 
-    const [spots, setSpots] = useState('')
+    const [spots, setSpots] = useState([])
 
     useEffect(() => {
         if (!spots) {
@@ -19,6 +19,7 @@ const SpotList = () => {
         if (spots) {
             setSpots(spots)
         }
+
     }
 
     const testMethod = () => {
@@ -26,7 +27,7 @@ const SpotList = () => {
         getAllSpots()
     }
 
-
+    console.log('Spots: ', spots)
     return (
         <div>
        <SubmitButton 
