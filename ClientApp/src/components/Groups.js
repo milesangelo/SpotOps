@@ -41,10 +41,10 @@ export class Groups extends Component {
      * 
      * 
      */
-    componentDidMount() {
-        this.populateGroupData();
-        this.populateUserName();
-    }
+    // componentDidMount() {
+    //     this.populateGroupData();
+    //     this.populateUserName();
+    // }
 
     /**
      * 
