@@ -9,6 +9,7 @@ import DeleteButton from '../buttons/DeleteButton'
 
 const GroupList = (props) => {
 
+    console.log("GOOGLE MAP API KEY: ", process.env.REACT_APP_GOOGLE_MAP_API_KEY);
     const [groups, setGroups] = useState(null)
     const [deletingGroup, setDeletingGroup] = useState({
         isDeleting: false,
