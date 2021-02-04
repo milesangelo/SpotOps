@@ -20,7 +20,7 @@ import ReactJson from 'react-json-view';
 //     );
 // }
 
-function GroupForm({ history, match }) {
+const GroupForm = ({ history, match }) => {
     const [user, setUser] = useState('')
     const [group, setGroup] = useState('')
 
