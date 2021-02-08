@@ -25,66 +25,46 @@ class FetchWrapper {
 
         return (data) ? data : []
         
-        // return await fetch(fullUrl, requestOptions)
-        //     .then(res => res.json())
-        //     .then(data => data);
-        
     }
 
     async getById (url, id) {
-
         let fullUrl = url.concat("/get").concat("/", id)
-        const token = await authService.getAccessToken();
-        const requestOptions = this.getRequestOptionsFor('GET', token);
-        const response = await fetch(fullUrl, requestOptions)
-        const data = await response.json()
+        let token = await authService.getAccessToken();
+        let requestOptions = this.getRequestOptionsFor('GET', token);
+        let data = await fetch(fullUrl, requestOptions)
+            .then(response => response.json())
+            .catch(alert)
+
         return (data) ? data : {}
     }
 
     async post(url, params) {
-        
         let fullUrl = url.concat("/post")
-        console.log('fullUrl: ', fullUrl)
-        const token = await authService.getAccessToken();
-        const requestOptions = this.getRequestOptionsFor('POST', token, params);
+        let token = await authService.getAccessToken();
+        let requestOptions = this.getRequestOptionsFor('POST', token, params);
+
         await fetch(fullUrl, requestOptions);
-        //const data = await response.json();
-
-        //return data;
-        // const response = fetch()
-        // const requestOptions = this.getRequestOptionsFor('POST', params)
-
-        // return await fetch(fullUrl, requestOptions)
-        //     .then(res => res.json())
-           // .then(data => data);
     }
 
     async delete(url, id) {
         let fullUrl = url.concat("/delete").concat("/", id)
-        console.log('fetchWrapper.delete() ', fullUrl, ' ', id)
+        let token = await authService.getAccessToken();
+        let requestOptions = this.getRequestOptionsFor('DELETE', token, id);
 
-        const token = await authService.getAccessToken();
-        const requestOptions = this.getRequestOptionsFor('DELETE', token, id);
-        const response = await fetch(fullUrl, requestOptions);
-        console.log('delete response: ', response);
-        //const data = await response.json();
+        await fetch(fullUrl, requestOptions)
+            .catch(alert);
+        
     }
 
     async put(url, id, params) {
         let fullUrl = url.concat("/update").concat("/", id)
+        let token = await authService.getAccessToken();
+        let requestOptions = this.getRequestOptionsFor('PUT', token, params);
 
-        const token = await authService.getAccessToken();
-        const requestOptions = this.getRequestOptionsFor('PUT', token, params);
-        const response = await fetch(fullUrl, requestOptions);
-        console.log('put response: ', response);
+        await fetch(fullUrl, requestOptions)
+            .catch(alert);
     }
 
-
-    /**
-     * 
-     * @param {*} method 
-     * @param {*} params 
-     */
     getRequestOptionsFor(method, token, params = undefined) {
         return this.createRequestOption(method,token,params);
     }
