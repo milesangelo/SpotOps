@@ -18,13 +18,24 @@ class FetchWrapper {
         let fullUrl = url.concat("/get")
 
         console.log('get ', fullUrl)
-        const token = await authService.getAccessToken();
-        const requestOptions = this.getRequestOptionsFor('GET', token);
-        const response = await fetch(fullUrl, requestOptions)
-        const data = await response.json()
-
-        return (data) ? data : []
-        
+        let token = await authService.getAccessToken();
+        let requestOptions = this.getRequestOptionsFor('GET', token);
+        return await fetch(fullUrl, requestOptions)
+            .then(response => {
+                if (response.status === 401) {
+                    // We need to redirect to log in again
+                    authService.signIn()
+                }
+                if (response.ok) {
+                    console.log('response ', response)
+                    let data = response.json()
+                    console.log('data ', data)
+                    return data ? data : []
+                }  
+            })
+            .catch(err => {
+                throw new Error(err);
+            }); 
     }
 
     async getById (url, id) {

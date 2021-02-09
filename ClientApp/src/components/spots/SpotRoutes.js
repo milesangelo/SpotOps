@@ -20,8 +20,9 @@ export default class SpotRoutes extends Component {
 
         return (
                 <Switch>
-                    <Route exact path={path} component={SpotList} />
-                    <Route exact path={path} component={SpotForm} />
+                    <SpotList exact path={path} component={SpotList} />
+                    <Route exact path={`${path}/add`} component={SpotForm} />
+                    <Route path={`${path}/edit/:id`} component={SpotForm} />
                 </Switch>           
             )
     }

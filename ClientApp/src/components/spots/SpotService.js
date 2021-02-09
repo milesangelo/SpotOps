@@ -1,5 +1,6 @@
-import React from 'react';
-import fetchwrapper from '../helpers/FetchWrapper';
+import fetchWrapper from '../helpers/FetchWrapper';
+import SpotModel from './SpotModel'
+
 
 class SpotService {
 
@@ -24,14 +25,20 @@ class SpotService {
      */
     getSpotById(id) {
         console.log('SpotService.getSpotById(): ', id);
-        return fetchwrapper.getById(this.url, id);
+        return fetchWrapper.getById(this.url, id);
     }
 
     getAll() {
         console.log('SpotService.getAll() ')
         //console.log(this.mockData)
-        return fetchwrapper.get(this.url);
+        return fetchWrapper.get(this.url);
        // return this.mockData;
+    }
+
+    createSpot(fields) {
+        console.log('posting new spot ', fields)
+        const spot = new SpotModel(fields)
+        return fetchWrapper.post(this.url, fields);
     }
 }
 

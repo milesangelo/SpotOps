@@ -9,7 +9,6 @@ import DeleteButton from '../buttons/DeleteButton'
 
 const GroupList = (props) => {
 
-    console.log("GOOGLE MAP API KEY: ", process.env.REACT_APP_GOOGLE_MAP_API_KEY);
     const [groups, setGroups] = useState(null)
     const [deletingGroup, setDeletingGroup] = useState({
         isDeleting: false,
@@ -44,10 +43,14 @@ const GroupList = (props) => {
         else {
             console.log('useEffect deletingGroup is false')
         }
-        groupService.getAll().then(grp => setGroups(grp))
+        groupService.getAll().then(grp => {
+            console.log('get all response', grp)
+            setGroups(grp)
+        })
     }, [deletingGroup])
  
     const render = (props) => {
+        
         const { path } = props
 
         return (
@@ -99,7 +102,6 @@ const GroupList = (props) => {
                                         isDeleting={deletingGroup.isDeleting} />
                                 </td>
                             </tr>
-
                         )}
                         {!groups &&
                             <tr>

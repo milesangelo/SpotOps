@@ -5,21 +5,6 @@ import groupService from './GroupService';
 import authService from '../api-authorization/AuthorizeService'
 import ReactJson from 'react-json-view';
 
-// const MyTextInput = ({ label, ...props }) => {
-//     // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
-//     // which we can spread on <input> and alse replace ErrorMessage entirely.
-//     const [field, meta] = useField(props);
-//     return (
-//         <>
-//         <label htmlFor={props.id || props.name}>{label}</label>
-//         <input className="text-input" {...field} {...props} />
-//         {meta.touched && meta.error ? (
-//             <div className="error">{meta.error}</div>
-//         ) : null}
-//         </>
-//     );
-// }
-
 const GroupForm = ({ history, match }) => {
     const [user, setUser] = useState('')
     const [group, setGroup] = useState('')
