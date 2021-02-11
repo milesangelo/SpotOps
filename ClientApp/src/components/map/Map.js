@@ -1,13 +1,14 @@
-import React from 'react'
-import { compose, withProps } from "recompose"
-import google, { LoadScript, withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps"
+import React, { useEffect } from 'react'
+import { compose, withProps } from 'recompose'
+import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
 import mapStyle from './MapStyles'
+import spotService from '../spots/SpotService'
 
 const options = {
   zoom: 8,
   center: { lat: 39.7392, lng: -104.9903 },
   clickableIcons: true,
-  //styles: mapStyle
+  styles: mapStyle
 }
 
 const Map = compose(
@@ -21,28 +22,38 @@ const Map = compose(
   withGoogleMap
 )((props) => {
 
-  const [markers, setMarkers] = React.useState([]);
+  const [markers, setMarkers] = React.useState([])
+
+  useEffect(() => {
+    console.log('Getting all the spots')
+    getSpotMarkers()
+  }, [])
+
+  const getSpotMarkers = () => {
+    let spots = spotService.getAll();
+    console.log('Google Map: spots: ', spots)
+    const i = 0.1;
+    spots.map(spot => {
+      setMarkers(current => [
+        ...current,
+        {
+          name: spot.name,
+          lat: 39.7392 + i, 
+          lng: -104.9903 + i,
+          time: new Date()
+        }
+      ])
+      
+    })
+  }
 
   return (
     <GoogleMap
       options={options}
-      onClick={(e) => {
-        console.log(e)
-        setMarkers(current => [
-          ...current, 
-          {
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng(),
-            time: new Date()
-          },
-        ])
-      }}
     >
       <div>
       {props.isMarkerShown && 
-        
-        markers.map(marker => {
-          return(
+        markers.map(marker => 
           <Marker 
             key={marker.time.toISOString()} 
             position={{lat: marker.lat , lng: marker.lng }} 
@@ -52,14 +63,24 @@ const Map = compose(
               
             }}
           />
-          )
-        })
+        )
       }
       </div>
 
     </GoogleMap>)
-}
+  }
 )
    
 export default Map;
-    
+
+// onClick={(e) => {
+//   console.log(e)
+//   setMarkers(current => [
+//     ...current, 
+//     {
+//       lat: e.latLng.lat(),
+//       lng: e.latLng.lng(),
+//       time: new Date()
+//     },
+//   ])
+// }}
