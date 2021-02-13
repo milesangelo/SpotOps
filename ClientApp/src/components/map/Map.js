@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { compose, withProps } from 'recompose'
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
 import mapStyle from './MapStyles'
@@ -22,18 +22,20 @@ const Map = compose(
   withGoogleMap
 )((props) => {
 
-  const [markers, setMarkers] = React.useState([])
+  const [markers, setMarkers] = useState([])
 
   useEffect(() => {
     console.log('Getting all the spots')
     getSpotMarkers()
   }, [])
 
-  const getSpotMarkers = () => {
-    let spots = spotService.getAll();
+  const getSpotMarkers = async() => {
+    let spots = await spotService.getAll();
+
     console.log('Google Map: spots: ', spots)
-    const i = 0.1;
-    spots.map(spot => {
+
+    var i = 0.1;
+    spots && spots.map(spot => {
       setMarkers(current => [
         ...current,
         {
@@ -43,7 +45,8 @@ const Map = compose(
           time: new Date()
         }
       ])
-      
+      i = i+0.1;
+      console.log(i)
     })
   }
 
