@@ -2,13 +2,9 @@ import React, { useEffect, useState} from 'react'
 import { Link } from 'react-router-dom';
 import groupService from './GroupService';
 import DeleteButton from '../buttons/DeleteButton'
-
-
-
-
+import './group-styles.css'
 
 const GroupList = (props) => {
-
     const [groups, setGroups] = useState(null)
     const [deletingGroup, setDeletingGroup] = useState({
         isDeleting: false,
@@ -26,33 +22,38 @@ const GroupList = (props) => {
         })
     }
     
-
+    /**
+     * 
+     */
     useEffect(() => {
         if (deletingGroup.isDeleting === true) {
-            console.log('useEffect deletingGroup is true')
-            console.log()
             groupService.deleteGroup(deletingGroup.id)
             .then(() => {
-                console.log('then deleted group')
                 setDeletingGroup({ 
                     isDeleting : false,
                     id : 0
                 })
             })
         }
-        else {
-            console.log('useEffect deletingGroup is false')
-        }
-        groupService.getAll().then(grp => {
-            console.log('get all response', grp)
-            setGroups(grp)
-        })
+       
+        getAllGroups()
+        
     }, [deletingGroup])
  
-    const render = (props) => {
-        
-        const { path } = props
+    const getAllGroups = () => {
+        groupService.getAll()
+            .then(grps => {
+                setGroups(grps);
+            })
+    }
 
+
+    /**
+     * 
+     * @param {*} props 
+     */
+    const render = (props) => {
+        const { path } = props
         return (
             <div>
                 <Link to={`${path}/add`} className="btn btn-sm btn-success mb-2" >Add Group</Link> 
@@ -89,8 +90,8 @@ const GroupList = (props) => {
                             <tr key={grp.id}>
                                 <td>{grp.name}</td>
                                 <td>{grp.owner}</td>
-                                <td>{grp.dateCreated}</td>
-                                <td>{grp.dateModified}</td>
+                                <td>{new Date(grp.dateCreated).toUTCString()}</td>
+                                <td>{new Date(grp.dateModified).toUTCString()}</td>
                                 <td>{grp.numMembers}</td>
                                 <td>{grp.numSpots}</td>
                                 <td style={{ whiteSpace: 'nowrap' }}>
@@ -122,7 +123,6 @@ const GroupList = (props) => {
             </div>
         );
     }
-
 
     return(
         render(props)

@@ -40,6 +40,15 @@ class SpotService {
         const spot = new SpotModel(fields)
         return fetchWrapper.post(this.url, fields);
     }
+
+    deleteSpot(id) {
+        return fetchWrapper.delete(this.url, id);
+    }
+
+    updateSpot(id, fields) {
+        return fetchWrapper.put(this.url, id, fields);
+    }
+
 }
 
 const spotService = new SpotService();

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Map from './map/Map'
+import SpotList from './spots/SpotList';
 
 export class Home extends Component {
 
@@ -15,6 +16,7 @@ export class Home extends Component {
               containerElement={<div style={{ height: `400px` }} />}
               mapElement={<div style={{ height: `100%` }} />} 
         />
+        <SpotList></SpotList>
       </div>
     );
   }

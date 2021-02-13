@@ -6,7 +6,6 @@ import spotService from './SpotService';
 import { Link } from 'react-router-dom'
 
 const SpotForm = ({ history, match }) => {
-
     const [user, setUser] = useState('')
     const [spot, setSpot] = useState('')
 
@@ -14,21 +13,19 @@ const SpotForm = ({ history, match }) => {
     const isAddMode = !id;
 
     const createSpot = (fields, setSubmitting) => {
-        console.log('create spot: ', fields)
         spotService.createSpot(fields)
             .then(() => {
-                console.log('created a spot')
+                setSubmitting(false);
                 history.push('.')
             });
-        
-        setSubmitting(false);
     }
 
     const updateSpot = (id, fields, setSubmitting) => {
-        console.log('updateing spot', id, fields);
-        spotService.updateSpot(id, fields);
-
-        setSubmitting(false);
+        spotService.updateSpot(id, fields)
+            .then(() => {
+                setSubmitting(false);
+                history.push('..');
+            });
     }
 
     const onSubmit = (fields, { setStatus, setSubmitting }) => {
@@ -52,20 +49,17 @@ const SpotForm = ({ history, match }) => {
             .then(spot => {
                 if (spot) {
                     setSpot(spot);
-                    console.log('setted spot by id: ', spot);
                 }
+            })
+            .catch(err => {
+                console.error(err);
             });
     }
-
-    // const onSubmit = () => {
-    //     console.log('SpotForm submit!')
-    // }
 
     useEffect(() => {
         if (!isAddMode) {
             getSpotById(id);
         }
-
         if (!user){
             getUser();
         }
@@ -75,7 +69,10 @@ const SpotForm = ({ history, match }) => {
         <Formik 
             enableReinitialize={true}
             initialValues={{ 
-                spot: {}
+                name: (spot && spot.name) || '',
+                spot: {
+                    name: spot.name
+                }
             }}
             onSubmit={onSubmit}
         >
@@ -93,7 +90,7 @@ const SpotForm = ({ history, match }) => {
                     </div>
 
                     <div className="form-row">
-                        <div className="form-group">
+                        <div className="form-group col-5">
                             <button type="submit" disabled={isSubmitting} className="btn btn-primary">
                                 {isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
                                     Save

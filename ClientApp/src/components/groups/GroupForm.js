@@ -13,21 +13,19 @@ const GroupForm = ({ history, match }) => {
     const isAddMode = !id;
 
     const createGroup = (fields, setSubmitting) => {
-        console.log('createGroup: ', fields)
         groupService.createGroup(fields)
             .then(() => {
-                console.log('createdGroup.then()')
+                setSubmitting(false)
                 history.push('.')
             })
-
-        setSubmitting(false)
     }
 
     const updateGroup = (id, fields, setSubmitting) => {
-        console.log('updateGroup')
         groupService.updateGroup(id, fields)
-        setSubmitting(false)
-        
+            .then(() => {
+                setSubmitting(false);
+                history.push('..');
+            });
     }
 
     const onSubmit = (fields, {setStatus, setSubmitting}) => {
@@ -47,33 +45,20 @@ const GroupForm = ({ history, match }) => {
     }
 
     const getGroupById = async(id) => {
-        const grp = await groupService.getGroupById(id);
-        console.log('GroupForm.getGroupById(): ', grp)
-        if (grp)
-        {
-            console.log('GroupForm.getGroupById() ', grp)
-            setGroup(grp);
-        }
+        await groupService.getGroupById(id)
+            .then(grp => {
+                setGroup(grp);
+            })
     }
 
     useEffect(() => {
-        console.log('isAddMode ', isAddMode)
         if (!isAddMode) {
-            
             getGroupById(id);
-            
-            // groupService.getById(id).then(grp => {
-            //     const fields = ['groupName', 'dateCreated', 'owner'];
-            //     fields.forEach(field => {
-            //         //setFieldValue
-            //     })
-            // });
         }
         if (!user){
             getUser();
         }
     }, []);
-
 
     return ( 
         <Formik 
@@ -89,7 +74,6 @@ const GroupForm = ({ history, match }) => {
             onSubmit={onSubmit}
         >
         {({ values, isSubmitting, errors, touched }) => {
-            console.log('GroupForm.rendering...', values.group)
             return (
                 <Form>
                 <div>

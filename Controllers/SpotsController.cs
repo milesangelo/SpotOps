@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SpotOps.Data;
 using SpotOps.Models;
@@ -35,7 +36,15 @@ namespace SpotOps.Controllers
         [HttpGet("get/{id:int}")]
         public IActionResult GetById(int id)
         {
-            return Ok();
+            var spot = _db.Spots
+                .FirstOrDefault(spt => spt.Id == id);
+
+            if (spot == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(spot);
         }
 
         /// <summary>
@@ -66,6 +75,67 @@ namespace SpotOps.Controllers
             _db.Spots.Add(newSpot);
             _db.SaveChanges();
             return Ok();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("delete/{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var spotToDelete = _db.Spots.First(spot => spot.Id == id);
+
+                if (spotToDelete == null)
+                {
+                    return NotFound($"Spot with id = {id} was not found.");
+                }
+
+                _db.Spots.Remove(spotToDelete);
+                _db.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="spot"></param>
+        /// <returns></returns>
+        [HttpPut("update/{id:int}")]
+        public IActionResult Put(int id, [FromBody] Spot spot)
+        {
+            try
+            {
+                var spotToEdit = _db.Spots.First(spot => spot.Id == id);
+                
+                if (spotToEdit == null)
+                {
+                    return NotFound($"Spot with id = {id} was not found.");
+                }
+
+                spotToEdit.Name = spot.Name;
+                //spotToEdit.DateModified = DateTime.Now;
+                
+                _db.SaveChanges();
+                
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }

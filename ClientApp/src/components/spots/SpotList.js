@@ -16,24 +16,24 @@ const SpotList = (props) => {
     const { path } = props
 
     useEffect(() => {
-        if (!spots) {
-            getAllSpots()
-        }
-        spotService.getAll()
-            .then(spots => {
-                console.log('got all spots ', spots)
-                setSpots(spots);
+        if (deletingSpot.isDeleting === true) {
+            spotService.deleteSpot(deletingSpot.id)
+            .then(() => {
+                setDeletingSpot({ 
+                    isDeleting : false,
+                    id : 0
+                })
             })
-       console.log('Calling spotService to get spots available.');
-    }, []);
+        }
+        getAllSpots()
+    }, [deletingSpot]);
 
     const getAllSpots = () => {
-        const spots = spotService.getAll();
-        if (spots) {
-            setSpots(spots)
-        }
+        spotService.getAll()
+            .then(spots => {
+                setSpots(spots);
+            })
     }
-
 
     const deleteSpot = (id) => {
         setDeletingSpot({
@@ -42,16 +42,10 @@ const SpotList = (props) => {
         })
     }
 
-    const testMethod = () => {
-        console.log('SpotList.testMethod!');
-        getAllSpots()
-    }
-
-    console.log('Spots: ', spots)
     return (
         <div>
-        <Link to={`${path}/add`} className="btn btn-sm btn-success mb-2" >Add Group</Link>
-        <p>Testing the spot list.</p>
+            <p></p>
+        <Link to={`${path}/add`} className="btn btn-sm btn-success mb-2" >Add Spot</Link>
             <table className="table table-striped">
                 <thead>
                     <tr>
@@ -66,7 +60,7 @@ const SpotList = (props) => {
                         <tr key={spot.id}>
                             <td>{spot.id}</td>
                             <td>{spot.name}</td>
-                            <td>{spot.dateCreated}</td>
+                            <td>{new Date(spot.dateCreated).toUTCString()}</td>
                             <td style={{whiteSpace: 'nowrap' }}>
                                 <Link to={`${path}/edit/${spot.id}`} className="btn btn-sm btn-primary mr-1">Edit</Link>
                                 <DeleteButton
