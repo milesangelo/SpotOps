@@ -4,6 +4,7 @@ import authService from '../api-authorization/AuthorizeService'
 import ReactJson from 'react-json-view'
 import spotService from './SpotService';
 import { Link } from 'react-router-dom'
+import FileUpload from '../images/FileUpload';
 
 const SpotForm = ({ history, match }) => {
     const [user, setUser] = useState('')
@@ -14,7 +15,9 @@ const SpotForm = ({ history, match }) => {
 
     const createSpot = (fields, setSubmitting) => {
         spotService.createSpot(fields)
-            .then(() => {
+            .then((newSpot) => {
+                console.log('newSpot response: ', newSpot)
+                setSpot(newSpot)
                 setSubmitting(false);
                 history.push('.')
             });
@@ -81,6 +84,7 @@ const SpotForm = ({ history, match }) => {
                 <Form>
                 <div>
                     <h1>{isAddMode ? 'Add Spot' : 'Edit Spot'}</h1>
+
                     <div className="form-group col-5">
                         <label>Name</label>
                         <Field
@@ -98,11 +102,16 @@ const SpotForm = ({ history, match }) => {
                             <Link to={isAddMode ? '.' : '..'} className="btn btn-link">Cancel</Link>
                         </div>
                     </div>
+
+                    <FileUpload ></FileUpload>
+
+
                     {values && <ReactJson src={values} theme="monokai" />}
                     {user && <ReactJson src={user} theme="monokai" />}
                 </div>
                 </Form>
             )}}
+            
             </Formik>
     )
 }

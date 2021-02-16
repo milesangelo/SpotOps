@@ -74,7 +74,8 @@ namespace SpotOps.Controllers
 
             _db.Spots.Add(newSpot);
             _db.SaveChanges();
-            return Ok();
+            
+            return Ok(newSpot);
         }
 
         /// <summary>

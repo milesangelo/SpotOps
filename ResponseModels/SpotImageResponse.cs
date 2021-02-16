@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using SpotOps.Models;
 
 namespace SpotOps.ResponseModels
 {
@@ -8,5 +9,7 @@ namespace SpotOps.ResponseModels
         public IFormFile FormFile { get; set; }
         public decimal Longitude { get; set; }
         public decimal Latitude { get; set; }
+        
+        public Spot Spot { get; set; }
     }
 }

@@ -54,7 +54,8 @@ class FetchWrapper {
         let token = await authService.getAccessToken();
         let requestOptions = this.getRequestOptionsFor('POST', token, params);
 
-        await fetch(fullUrl, requestOptions);
+        return await fetch(fullUrl, requestOptions)
+            .then(res => res.json());
     }
 
     async delete(url, id) {
