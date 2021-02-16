@@ -38,6 +38,11 @@ namespace SpotOps.Data
         /// 
         /// </summary>
         public DbSet<Spot> Spots { get; set; }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public DbSet<SpotImage> SpotImages { get; set; }
     }
 }

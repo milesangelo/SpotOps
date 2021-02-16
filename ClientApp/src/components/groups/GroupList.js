@@ -2,7 +2,6 @@ import React, { useEffect, useState} from 'react'
 import { Link } from 'react-router-dom';
 import groupService from './GroupService';
 import DeleteButton from '../buttons/DeleteButton'
-import './group-styles.css'
 
 const GroupList = (props) => {
     const [groups, setGroups] = useState(null)

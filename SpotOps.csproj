@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ExifLib" Version="1.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.0" />
@@ -22,12 +23,29 @@
 
   <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Remove="SpotOpsLib\**" />
   </ItemGroup>
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+    <Content Remove="SpotOpsLib\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="SpotOpsLib\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="SpotOpsLib\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="SpotOpsLib\bin\Debug\net5.0\SpotOpsLib.deps.json" />
+    <_ContentIncludedByDefault Remove="SpotOpsLib\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="SpotOpsLib\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="SpotOpsLib\obj\SpotOpsLib.csproj.nuget.dgspec.json" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpotOps.Data;
 
 namespace SpotOps.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210213060641_AddsGeoLoc")]
+    partial class AddsGeoLoc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -367,31 +369,6 @@ namespace SpotOps.Data.Migrations
                     b.ToTable("Spots");
                 });
 
-            modelBuilder.Entity("SpotOps.Models.SpotImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Lat")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Lng")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("SpotId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SpotId");
-
-                    b.ToTable("SpotImages");
-                });
-
             modelBuilder.Entity("ApplicationUserGroup", b =>
                 {
                     b.HasOne("SpotOps.Models.Group", null)
@@ -456,15 +433,6 @@ namespace SpotOps.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SpotOps.Models.SpotImage", b =>
-                {
-                    b.HasOne("SpotOps.Models.Spot", "Spot")
-                        .WithMany()
-                        .HasForeignKey("SpotId");
-
-                    b.Navigation("Spot");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,10 +1,21 @@
 import React, { Component } from 'react'
+import FileUpload from './images/FileUpload';
 import Map from './map/Map'
 import SpotList from './spots/SpotList';
 
 export class Home extends Component {
 
   static displayName = Home.name;
+
+  // render () {
+  //   return (
+  //     <div>
+  //       <FileUpload />
+  //     </div>
+  //   );
+  // }
+
+
 
   render () {
     return (
@@ -16,7 +27,7 @@ export class Home extends Component {
               containerElement={<div style={{ height: `400px` }} />}
               mapElement={<div style={{ height: `100%` }} />} 
         />
-        <SpotList></SpotList>
+        <SpotList path="/spots" ></SpotList>
       </div>
     );
   }

@@ -5,8 +5,8 @@ import mapStyle from './MapStyles'
 import spotService from '../spots/SpotService'
 
 const options = {
-  zoom: 8,
-  center: { lat: 39.7392, lng: -104.9903 },
+  zoom: 12,
+  //center: { lat: 39.7392, lng: -104.9903 },
   clickableIcons: true,
   styles: mapStyle
 }
@@ -22,12 +22,27 @@ const Map = compose(
   withGoogleMap
 )((props) => {
 
+  const [center, setCenter] = useState()
   const [markers, setMarkers] = useState([])
 
   useEffect(() => {
     console.log('Getting all the spots')
+    getCurrentLocation()
     getSpotMarkers()
   }, [])
+
+
+  const getCurrentLocation = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.watchPosition((pos) => {
+        console.log('Setting Center: ', pos.coords.longitude);
+        setCenter({
+          lat : pos.coords.latitude,
+          lng : pos.coords.longitude
+        })
+      })
+    }
+  }
 
   const getSpotMarkers = async() => {
     let spots = await spotService.getAll();
@@ -53,6 +68,7 @@ const Map = compose(
   return (
     <GoogleMap
       options={options}
+      center={{ lat: ((center && center.lat) || 0), lng: ((center && center.lng) || 0) }}
     >
       <div>
       {props.isMarkerShown && 
