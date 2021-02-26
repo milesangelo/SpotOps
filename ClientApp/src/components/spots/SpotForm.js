@@ -1,10 +1,29 @@
 import React, { useState, useEffect} from 'react';
-import { Formik, Form, Field } from 'formik';
-import authService from '../api-authorization/AuthorizeService'
-import ReactJson from 'react-json-view'
-import spotService from './SpotService';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Link } from 'react-router-dom'
-import FileUpload from '../images/FileUpload';
+import { Input } from 'reactstrap'
+import * as Yup from 'yup';
+
+import authService from '../api-authorization/AuthorizeService';
+import spotService from './SpotService';
+
+import ReactJson from 'react-json-view';
+import imageService from '../images/imageService';
+
+const SpotSchema = Yup.object().shape({
+    name: Yup.string()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Required'),
+    photo: Yup.mixed()
+        .required("Take a picture of the spot!") 
+        .test("fileSize", "File is too large", (value) => {
+            return value && value.size <= 10000000
+        })
+    //email: Yup.string().email('Invalid email').required('Required'),
+  });
+
+
 
 const SpotForm = ({ history, match }) => {
     const [user, setUser] = useState('')
@@ -31,14 +50,14 @@ const SpotForm = ({ history, match }) => {
             });
     }
 
-    const onSubmit = (fields, { setStatus, setSubmitting }) => {
-        setStatus();
-        if (isAddMode) {
-            createSpot(fields, setSubmitting);
-        } else {
-            updateSpot(id, fields, setSubmitting);
-        }
-    }
+    // const onSubmit = (fields, { setStatus, setSubmitting }) => {
+    //     setStatus();
+    //     if (isAddMode) {
+    //         createSpot(fields, setSubmitting);
+    //     } else {
+    //         updateSpot(id, fields, setSubmitting);
+    //     }
+    // }
 
     const getUser = async() => {
         const [isAuthenticated, user] = await Promise.all([authService.isAuthenticated(), authService.getUser()])
@@ -68,6 +87,13 @@ const SpotForm = ({ history, match }) => {
         }
     }, []);
 
+    const onSubmit = async (values) => {
+        const formData = new FormData();
+        //spotService.createSpot(values);
+        //var spotId = 1;
+        //imageService.uploadImage(spotId, values.photo)
+    }
+
     return ( 
         <Formik 
             enableReinitialize={true}
@@ -75,11 +101,15 @@ const SpotForm = ({ history, match }) => {
                 name: (spot && spot.name) || '',
                 spot: {
                     name: spot.name
-                }
+                },
+                photo: ''
             }}
-            onSubmit={onSubmit}
+            validationSchema={SpotSchema}
+            onSubmit={(async (values) => {
+                onSubmit(values);
+            })}
         >
-        {({ values, isSubmitting, errors, touched }) => {
+        {({ values, isSubmitting, errors, handleChange, setFieldValue }) => {
             return (
                 <Form>
                 <div>
@@ -91,7 +121,23 @@ const SpotForm = ({ history, match }) => {
                             name="name"
                             type="text"
                             className={'form-control'} />
+                        <ErrorMessage name="name"/>
                     </div>
+
+
+                    <div className="form-group col-5">
+                        <label>Name</label>
+                        <Input
+                            name="photo"
+                            type="file"
+                            className={'form-control'} 
+                            onChange={async (e) => {
+                                handleChange('photo');
+                                setFieldValue('photo', e.target.files[0]);
+                            }} />
+                        <ErrorMessage name="photo" />
+                    </div>
+
 
                     <div className="form-row">
                         <div className="form-group col-5">
@@ -102,12 +148,9 @@ const SpotForm = ({ history, match }) => {
                             <Link to={isAddMode ? '.' : '..'} className="btn btn-link">Cancel</Link>
                         </div>
                     </div>
-
-                    <FileUpload ></FileUpload>
-
-
-                    {values && <ReactJson src={values} theme="monokai" />}
-                    {user && <ReactJson src={user} theme="monokai" />}
+                    {errors && <ReactJson name="errors" src={errors} theme="monokai" />}
+                    {values && <ReactJson name="values" src={values} theme="monokai" />}
+                    {user && <ReactJson name="user" src={user} theme="monokai" />}
                 </div>
                 </Form>
             )}}
