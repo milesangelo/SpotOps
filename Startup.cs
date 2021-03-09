@@ -1,6 +1,10 @@
+using System.Net.Http;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +36,8 @@ namespace SpotOps
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
+            services.AddHttpContextAccessor();
+            //services.AddSingleton<IHttpClientFactory, >()
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -41,6 +47,12 @@ namespace SpotOps
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
+            services.Configure<JwtBearerOptions>(IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
+                options =>
+                {
+
+                });
+            
             services.AddControllersWithViews();
             services.AddRazorPages();
 
@@ -74,7 +86,9 @@ namespace SpotOps
 
             app.UseAuthentication();
             app.UseIdentityServer();
+            
             app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

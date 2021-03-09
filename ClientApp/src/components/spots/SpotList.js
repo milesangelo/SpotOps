@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ReactJson from 'react-json-view';
 import { Link } from 'react-router-dom';
 import DeleteButton from '../buttons/DeleteButton';
-import SubmitButton from '../buttons/SubmitButton'
+//import SubmitButton from '../buttons/SubmitButton'
 import spotService from './SpotService'
 
 const SpotList = (props) => {

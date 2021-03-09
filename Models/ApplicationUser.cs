@@ -9,6 +9,7 @@ namespace SpotOps.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public ICollection<Group> Groups { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
     }
 }
