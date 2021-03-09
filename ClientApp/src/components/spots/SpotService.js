@@ -37,7 +37,6 @@ class SpotService {
 
     createSpot(fields) {
         console.log('posting new spot ', fields)
-        const spot = new SpotModel(fields)
         return fetchWrapper.post(this.url, fields);
     }
 
