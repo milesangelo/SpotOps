@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpotOps.Data;
 
-namespace SpotOps.Data.Migrations
+namespace SpotOps.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -15,21 +15,6 @@ namespace SpotOps.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.0");
-
-            modelBuilder.Entity("ApplicationUserGroup", b =>
-                {
-                    b.Property<int>("GroupsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("UsersId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("GroupsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("ApplicationUserGroup");
-                });
 
             modelBuilder.Entity("IdentityServer4.EntityFramework.Entities.DeviceFlowCodes", b =>
                 {
@@ -274,6 +259,9 @@ namespace SpotOps.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Age")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
@@ -285,10 +273,16 @@ namespace SpotOps.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
@@ -319,6 +313,8 @@ namespace SpotOps.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -356,6 +352,9 @@ namespace SpotOps.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
@@ -373,13 +372,19 @@ namespace SpotOps.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("FileName")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Lat")
+                    b.Property<string>("Guid")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Lng")
+                    b.Property<string>("ImageType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PathToFile")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("SpotId")
@@ -390,21 +395,6 @@ namespace SpotOps.Data.Migrations
                     b.HasIndex("SpotId");
 
                     b.ToTable("SpotImages");
-                });
-
-            modelBuilder.Entity("ApplicationUserGroup", b =>
-                {
-                    b.HasOne("SpotOps.Models.Group", null)
-                        .WithMany()
-                        .HasForeignKey("GroupsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SpotOps.Models.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -458,6 +448,13 @@ namespace SpotOps.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SpotOps.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("SpotOps.Models.Group", null)
+                        .WithMany("Users")
+                        .HasForeignKey("GroupId");
+                });
+
             modelBuilder.Entity("SpotOps.Models.SpotImage", b =>
                 {
                     b.HasOne("SpotOps.Models.Spot", "Spot")
@@ -465,6 +462,11 @@ namespace SpotOps.Data.Migrations
                         .HasForeignKey("SpotId");
 
                     b.Navigation("Spot");
+                });
+
+            modelBuilder.Entity("SpotOps.Models.Group", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
