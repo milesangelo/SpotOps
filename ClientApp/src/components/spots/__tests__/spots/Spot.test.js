@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Spot } from '../../components/spots/Spot';
+import { Spot } from '../../Spot';
 
 describe('Spot', () => {
     let spot;
