@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using SpotOps.Data;
 using SpotOps.Models;
 using SpotOps.ResponseModels;
@@ -24,7 +22,6 @@ namespace SpotOps.Controllers
         /// </summary>
         private ApplicationDbContext _db;
 
-        
         /// <summary>
         /// 
         /// </summary>

@@ -1,5 +1,5 @@
 import authService from '../api-authorization/AuthorizeService'
-import axios from 'axios';
+
 // export const fetchWrapper2 = {
 //     //get,
 //     //post,
@@ -50,21 +50,12 @@ class FetchWrapper {
     }
 
     async post(url, params) {
-        let fullUrl = url.concat("/post");
+        let fullUrl = url.concat("/post")
         let token = await authService.getAccessToken();
-        let config = {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'content-type': 'multipart/form-data'
-            }
-        };
+        let requestOptions = this.getRequestOptionsFor('POST', token, params);
 
-        const res = await axios.post(fullUrl, params, config);
-        console.log('res from axios post: ' , res);
-        return res;
-
-        //return await fetch(fullUrl, requestOptions)
-        //    .then(res => res.json());
+        return await fetch(fullUrl, requestOptions)
+            .then(res => res.json());
     }
 
     async delete(url, id) {

@@ -44,6 +44,5 @@ namespace SpotOps.Data
         /// </summary>
         /// <returns></returns>
         public DbSet<SpotImage> SpotImages { get; set; }
-        
     }
 }

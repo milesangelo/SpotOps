@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Http;
 
 namespace SpotOps.Models
 {
@@ -17,15 +16,10 @@ namespace SpotOps.Models
         /// 
         /// </summary>
         public string Name { get; set; }
-
+        
         /// <summary>
         /// 
         /// </summary>
         public DateTime DateCreated { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string CreatedBy { get; set; }
     }
 }
