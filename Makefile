@@ -3,14 +3,17 @@ PROJECT_NAME ?= SpotOps
 
 .PHONY: migrations db remove hello
 
-migrations:
-	dotnet ef migrations add $(mname)
+add_migrations:
+	dotnet ef migrations add $(mname) --output-dir ./Data/Migrations/
 
-db:
+remove_migrations:
+	dotnet ef migrations remove
+
+update_db:
 	dotnet ef database update
 
-remove:
-	dotnet ef migrations remove
+drop_db:
+    dotnet ef database drop -f -v
 
 hello:
 	echo 'Hello!'
