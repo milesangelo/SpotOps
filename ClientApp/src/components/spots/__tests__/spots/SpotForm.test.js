@@ -4,7 +4,7 @@ import { render, fireEvent, waitFor, screen, getByText, queryByDisplayValue } fr
 import { createContainer } from '../../../helpers/DomManipulators';
 import ReactTestUtils, { act } from 'react-dom/test-utils';
 import mockAxios from '../../../../__mocks__/axios';
-import { AuthorizeRoute}  from '../../../api-authorization/AuthorizeRoute'
+
 jest.mock('axios');
 
 const spy = () => {

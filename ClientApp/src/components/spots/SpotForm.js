@@ -31,10 +31,17 @@ export const SpotForm = ({
     name, 
     type, 
     imageSource,
-    selectableTypes
+    selectableTypes,
+    match: {params},
+    //location
 }) => {
 
-    const createMode = useRef(!(name && type));
+    //console.log('SpotForm match: ', match);
+    //console.log('SpotForm location: ', location);
+
+    const { id } = params;
+    const createMode = useRef(!(name && type) && !id);
+
     const [ imageFile, setImageFile ] = useState();
     const [ preview, setPreview ] = useState(); 
     const fileInputRef = useRef();
@@ -43,6 +50,32 @@ export const SpotForm = ({
         type: type || ''
     });
   
+    useEffect(() => {
+        if (!createMode.current) {
+            getSpotById(id);
+        }
+
+    }, []);
+
+    const getSpotById = async(id) => {
+        await spotService.getSpotById(id)
+            .then(({name, id}) => {
+                setSpot({
+                    name: name,
+                    type: "Rail"
+                });
+            });
+    
+            // .then(spot => {
+            //     if (spot) {
+            //         setSpot(spot);
+            //     }
+            // })
+            // .catch(err => {
+            //     console.error(err);
+            // });
+    }
+
     // Create previews as a side effect of when selected file is changed.
     useEffect(() => {
         if (imageFile){
@@ -76,19 +109,10 @@ export const SpotForm = ({
         formData.append('type', spot.type);
         formData.append("formFile", imageFile || '');
         formData.append("fileName", (imageFile && imageFile.name) || '');
-        //let createMode = !(spot.name && spot.type);
+
         if (createMode.current)
         {
             spotService.createSpot(formData);
-            // const headers = {
-            //     'Content-Type': 'application/json',
-            //     'Authorization': ''
-            //   }
-            // const token = await authService.getAccessToken();
-            // axios.post('api/spots', {
-            //     data: formData,
-                
-            // });
         }
         else {
             axios.post('api/spots', { 
