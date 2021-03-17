@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -12,11 +13,10 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
 
 namespace SpotOps.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("/api/spots")]
     public class SpotsController : ControllerBase
@@ -41,19 +41,71 @@ namespace SpotOps.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("get/{id:int}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var spot = _db.Spots
                 .FirstOrDefault(spt => spt.Id == id);
-
-            if (spot == null)
+            
+            var image = _db.SpotImages.FirstOrDefault(img => img.Spot.Equals(spot));
+            
+            if (spot == null && image == null)
             {
                 return NotFound();
             }
-
-            return Ok(spot);
+            
+            var path = Path.Combine(image.PathToFile, image.Guid + image.ImageType);
+            
+            var memory = new MemoryStream();  
+            using (var stream = new FileStream(path, FileMode.Open))  
+            {  
+                await stream.CopyToAsync(memory);  
+            }
+            memory.Position = 0;  
+            FileStreamResult file = File(memory, GetContentType(path), Path.GetFileName(path));
+            
+            var spotResponse = new SpotGetResponse
+            {
+                Spot = spot,
+                File = file
+            };
+            
+            return Ok(spotResponse);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private string GetContentType(string path)  
+        {  
+            var types = GetMimeTypes();  
+            var ext = Path.GetExtension(path).ToLowerInvariant();  
+            return types[ext];  
+        }  
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, string> GetMimeTypes()  
+        {  
+            return new Dictionary<string, string>  
+            {  
+                {".txt", "text/plain"},  
+                {".pdf", "application/pdf"},  
+                {".doc", "application/vnd.ms-word"},  
+                {".docx", "application/vnd.ms-word"},  
+                {".xls", "application/vnd.ms-excel"},  
+                {".xlsx", "application/vnd.openxmlformats officedocument.spreadsheetml.sheet"},  
+                {".png", "image/png"},  
+                {".jpg", "image/jpeg"},  
+                {".jpeg", "image/jpeg"},  
+                {".gif", "image/gif"},  
+                {".csv", "text/csv"}  
+            };  
+        }
+        
         /// <summary>
         /// 
         /// </summary>
