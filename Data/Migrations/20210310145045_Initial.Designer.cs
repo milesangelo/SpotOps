@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpotOps.Data;
 
-namespace SpotOps.Migrations
+namespace SpotOps.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210310145045_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -273,9 +275,6 @@ namespace SpotOps.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("GroupId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
@@ -313,8 +312,6 @@ namespace SpotOps.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -448,13 +445,6 @@ namespace SpotOps.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SpotOps.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("SpotOps.Models.Group", null)
-                        .WithMany("Users")
-                        .HasForeignKey("GroupId");
-                });
-
             modelBuilder.Entity("SpotOps.Models.SpotImage", b =>
                 {
                     b.HasOne("SpotOps.Models.Spot", "Spot")
@@ -462,11 +452,6 @@ namespace SpotOps.Migrations
                         .HasForeignKey("SpotId");
 
                     b.Navigation("Spot");
-                });
-
-            modelBuilder.Entity("SpotOps.Models.Group", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
