@@ -1,23 +1,10 @@
 import authService from '../api-authorization/AuthorizeService'
 import axios from 'axios';
-// export const fetchWrapper2 = {
-//     //get,
-//     //post,
-//     put,
-//     delete: _delete
-// };
 
 class FetchWrapper {
     
-
-    /**
-     * 
-     */
     async get (url)  {
-      
         let fullUrl = url.concat("/get")
-
-        console.log('get ', fullUrl)
         let token = await authService.getAccessToken();
         let requestOptions = this.getRequestOptionsFor('GET', token);
         return await fetch(fullUrl, requestOptions)
@@ -27,9 +14,7 @@ class FetchWrapper {
                     authService.signIn()
                 }
                 if (response.ok) {
-                    console.log('response ', response)
                     let data = response.json()
-                    console.log('data ', data)
                     return data ? data : []
                 }  
             })
@@ -40,13 +25,30 @@ class FetchWrapper {
 
     async getById (url, id) {
         let fullUrl = url.concat("/get").concat("/", id)
+        console.log('getting token');
         let token = await authService.getAccessToken();
-        let requestOptions = this.getRequestOptionsFor('GET', token);
-        let data = await fetch(fullUrl, requestOptions)
-            .then(response => response.json())
-            .catch(alert)
 
-        return (data) ? data : {}
+        console.log('got token');
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                //'content-type': 'multipart/form-data'
+            }
+        }
+
+        console.log('getting axios ', fullUrl);
+        
+        const res = await axios.get(fullUrl, config);
+
+        console.log('axios.get() result: ', res.data);
+        
+        return res.data;
+        // let requestOptions = this.getRequestOptionsFor('GET', token);
+        // let data = await fetch(fullUrl, requestOptions)
+        //     .then(response => response.json())
+        //     .catch(alert)
+
+        // return (data) ? data : {}
     }
 
     async post(url, params) {
@@ -60,11 +62,7 @@ class FetchWrapper {
         };
 
         const res = await axios.post(fullUrl, params, config);
-        console.log('res from axios post: ' , res);
         return res;
-
-        //return await fetch(fullUrl, requestOptions)
-        //    .then(res => res.json());
     }
 
     async delete(url, id) {
@@ -91,10 +89,6 @@ class FetchWrapper {
     }
 
     createRequestOption(method, token, params) {
-        console.log('createRequestOption.token; ', token ? true : false)
-        console.log('createRequestOption.method; ', method)
-        console.log('createRequestOption.params; ', params)
-
         if (!method) return null;
 
         if (params) {
@@ -117,62 +111,8 @@ class FetchWrapper {
             };
         }
     }
-
-    // getRequestOptionsFor(httpMethod, token) {
-    //     return {
-    //         method: httpMethod,
-    //         headers: (!token) ? 
-    //             {} : { 
-    //                 'Authorization': `Bearer ${token}`
-    //             }
-    //     }
-    // }
-
-
-
 }
 
 const fetchWrapper = new FetchWrapper()
 
 export default fetchWrapper;
-
-// function post(url, body) {
-//     const requestOptions = {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify(body)
-//     };
-//     return fetch(url, requestOptions).then(handleResponse);
-// }
-
-// function put(url, body) {
-//     const requestOptions = {
-//         method: 'PUT',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify(body)
-//     };
-//     return fetch(url, requestOptions).then(handleResponse);    
-// }
-
-// prefixed with underscored because delete is a reserved word in javascript
-// function _delete(url) {
-//     const requestOptions = {
-//         method: 'DELETE'
-//     };
-//     return fetch(url, requestOptions).then(handleResponse);
-// }
-
-// // helper functions
-
-// function handleResponse(response) {
-//     return response.text().then(text => {
-//         const data = text && JSON.parse(text);
-        
-//         if (!response.ok) {
-//             const error = (data && data.message) || response.statusText;
-//             return Promise.reject(error);
-//         }
-
-//         return data;
-//     });
-// }
