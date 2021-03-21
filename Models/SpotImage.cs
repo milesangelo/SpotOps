@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SpotOps.Models
 {
@@ -38,5 +39,10 @@ namespace SpotOps.Models
         /// 
         /// </summary>
         public string CreatedBy { get; set; }
+        
+        [NotMapped] public string OriginalFileName => $"{FileName}";
+        
+        [NotMapped] public string GuidFileName => $"{Guid}{ImageType}";
+        
     }
 }

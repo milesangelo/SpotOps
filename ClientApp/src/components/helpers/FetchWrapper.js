@@ -4,23 +4,16 @@ import axios from 'axios';
 class FetchWrapper {
     
     async get (url)  {
-        let fullUrl = url.concat("/get")
+        let fullUrl = url.concat("/get");
         let token = await authService.getAccessToken();
-        let requestOptions = this.getRequestOptionsFor('GET', token);
-        return await fetch(fullUrl, requestOptions)
-            .then(response => {
-                if (response.status === 401) {
-                    // We need to redirect to log in again
-                    authService.signIn()
-                }
-                if (response.ok) {
-                    let data = response.json()
-                    return data ? data : []
-                }  
-            })
-            .catch(err => {
-                throw new Error(err);
-            }); 
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        }
+        const res = await axios.get(fullUrl, config);
+        console.log('axios get result ', res)
+        return res.data;
     }
 
     async getById (url, id) {
@@ -28,11 +21,9 @@ class FetchWrapper {
         console.log('getting token');
         let token = await authService.getAccessToken();
 
-        console.log('got token');
         let config = {
             headers: {
                 'Authorization': `Bearer ${token}`,
-                //'content-type': 'multipart/form-data'
             }
         }
 

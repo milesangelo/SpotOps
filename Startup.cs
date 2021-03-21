@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Http;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
@@ -14,6 +15,7 @@ using SpotOps.Data;
 using SpotOps.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 namespace SpotOps
@@ -53,6 +55,7 @@ namespace SpotOps
 
                 });
             
+            
             services.AddControllersWithViews();
             services.AddRazorPages();
 
@@ -79,7 +82,13 @@ namespace SpotOps
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "wwwroot")),
+                RequestPath = "/images" 
+            });
+            
             app.UseSpaStaticFiles();
 
             app.UseRouting();

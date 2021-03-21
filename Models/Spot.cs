@@ -27,5 +27,7 @@ namespace SpotOps.Models
         /// 
         /// </summary>
         public string CreatedBy { get; set; }
+
+        public string Type { get; set; }
     }
 }

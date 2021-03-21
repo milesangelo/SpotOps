@@ -33,11 +33,7 @@ export const SpotForm = ({
     imageSource,
     selectableTypes,
     match: {params},
-    //location
 }) => {
-
-    //console.log('SpotForm match: ', match);
-    //console.log('SpotForm location: ', location);
 
     const { id } = params;
     const createMode = useRef(!(name && type) && !id);
@@ -47,7 +43,8 @@ export const SpotForm = ({
     const fileInputRef = useRef();
     const [spot, setSpot] = useState({ 
         name: name || '',
-        type: type || ''
+        type: type || '',
+        id: ''
     });
   
     useEffect(() => {
@@ -59,21 +56,16 @@ export const SpotForm = ({
 
     const getSpotById = async(id) => {
         await spotService.getSpotById(id)
-            .then(({name, id}) => {
+            .then((spot) => {
+                console.log(spot);
                 setSpot({
-                    name: name,
-                    type: "Rail"
+                    name: spot.name,
+                    type: spot.type,
+                    id: spot.id
                 });
+
+                setPreview(spot.fileImageSrc);
             });
-    
-            // .then(spot => {
-            //     if (spot) {
-            //         setSpot(spot);
-            //     }
-            // })
-            // .catch(err => {
-            //     console.error(err);
-            // });
     }
 
     // Create previews as a side effect of when selected file is changed.
@@ -112,9 +104,11 @@ export const SpotForm = ({
 
         if (createMode.current)
         {
+            console.log('createSpot')
             spotService.createSpot(formData);
         }
         else {
+            console.log('else createSpot')
             axios.post('api/spots', { 
                 data: formData
             });

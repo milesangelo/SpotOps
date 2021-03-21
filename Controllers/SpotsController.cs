@@ -13,6 +13,9 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Design;
 
 namespace SpotOps.Controllers
 {
@@ -45,76 +48,74 @@ namespace SpotOps.Controllers
         {
             var spot = _db.Spots
                 .FirstOrDefault(spt => spt.Id == id);
+
+            var image = _db.SpotImages
+                .FirstOrDefault(img => img.Spot.Equals(spot));
             
-            var image = _db.SpotImages.FirstOrDefault(img => img.Spot.Equals(spot));
-            
-            if (spot == null && image == null)
+            if (spot == null || image == null)
             {
                 return NotFound();
             }
             
-            var path = Path.Combine(image.PathToFile, image.Guid + image.ImageType);
-            
-            var memory = new MemoryStream();  
-            using (var stream = new FileStream(path, FileMode.Open))  
-            {  
-                await stream.CopyToAsync(memory);  
-            }
-            memory.Position = 0;  
-            FileStreamResult file = File(memory, GetContentType(path), Path.GetFileName(path));
-            
-            var spotResponse = new SpotGetResponse
+            var spotResponse = new SpotResponse
             {
-                Spot = spot,
-                File = file
+                Name = spot.Name,
+                Type = string.Empty,
+                FileName = image.FileName,
+                FileImageSrc = GetImageSrc(image.GuidFileName)
             };
-            
+
             return Ok(spotResponse);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="path"></param>
         /// <returns></returns>
-        private string GetContentType(string path)  
-        {  
-            var types = GetMimeTypes();  
-            var ext = Path.GetExtension(path).ToLowerInvariant();  
-            return types[ext];  
-        }  
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private Dictionary<string, string> GetMimeTypes()  
-        {  
-            return new Dictionary<string, string>  
-            {  
-                {".txt", "text/plain"},  
-                {".pdf", "application/pdf"},  
-                {".doc", "application/vnd.ms-word"},  
-                {".docx", "application/vnd.ms-word"},  
-                {".xls", "application/vnd.ms-excel"},  
-                {".xlsx", "application/vnd.openxmlformats officedocument.spreadsheetml.sheet"},  
-                {".png", "image/png"},  
-                {".jpg", "image/jpeg"},  
-                {".jpeg", "image/jpeg"},  
-                {".gif", "image/gif"},  
-                {".csv", "text/csv"}  
-            };  
+        [HttpGet("get")]
+        public async Task<ActionResult> Get()
+        {
+            List<SpotResponse> spotResponses = new List<SpotResponse>();
+            
+            var spotsWithImage = _db.Spots.Join(_db.SpotImages,
+                spt => spt.Id,
+                img => img.Spot.Id,
+                (spot, image) => new
+                {
+                    spot.Id,
+                    spot.Name,
+                    spot.Type,
+                    image.OriginalFileName,
+                    image.GuidFileName
+                });
+            
+            foreach (var spotwImage in spotsWithImage)
+            {
+                spotResponses.Add(new SpotResponse
+                {
+                    Id = spotwImage.Id,
+                    Name = spotwImage.Name,
+                    Type = spotwImage.Type,
+                    FileName = spotwImage.OriginalFileName,
+                    FileImageSrc = GetImageSrc(spotwImage.GuidFileName)
+                });
+            }
+            
+            return Ok(spotResponses);
         }
         
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="fileName"></param>
         /// <returns></returns>
-        [HttpGet("get")]
-        public IActionResult Get()
+        public string GetImageSrc(string fileName)
         {
-            var spots = _db.Spots.Select(spot => spot);
-            return Ok(spots);
+            return fileName.IsNullOrEmpty() ? string.Empty : string.Format("{0}://{1}{2}/images/{3}",
+                Request.Scheme,
+                Request.Host,
+                Request.PathBase,
+                fileName);
         }
 
         /// <summary>
