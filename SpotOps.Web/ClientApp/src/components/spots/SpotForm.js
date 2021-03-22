@@ -29,7 +29,7 @@ import spotService from './SpotService';
 
 export const SpotForm = ({ 
     name, 
-    type, 
+    type,
     imageSource,
     selectableTypes,
     match: {params},
@@ -44,7 +44,7 @@ export const SpotForm = ({
     const [spot, setSpot] = useState({ 
         name: name || '',
         type: type || '',
-        id: ''
+        id: 0
     });
   
     useEffect(() => {
@@ -80,6 +80,7 @@ export const SpotForm = ({
     }, [imageFile]);
 
     const handleChange = ({ target }) => {
+        console.log('handle change', target)
         setSpot(spot => ({
             ...spot,
             [target.name]: target.value
@@ -101,17 +102,20 @@ export const SpotForm = ({
         formData.append('type', spot.type);
         formData.append("formFile", imageFile || '');
         formData.append("fileName", (imageFile && imageFile.name) || '');
+        formData.append('id', spot.id);
+
+        console.log('handle submit formData: ', formData)
 
         if (createMode.current)
         {
+            formData.append('id', 0);
             console.log('createSpot')
             spotService.createSpot(formData);
         }
         else {
-            console.log('else createSpot')
-            axios.post('api/spots', { 
-                data: formData
-            });
+            formData.append('id', spot.id)
+            console.log('else modifying spot')
+            spotService.updateSpot(formData);
         }
     }
 

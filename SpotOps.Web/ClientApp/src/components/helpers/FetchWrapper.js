@@ -42,6 +42,28 @@ class FetchWrapper {
         // return (data) ? data : {}
     }
 
+    // UPDATE
+    async put(url, params) {
+        
+
+        let id = params.get('id');
+        console.log('id is ', id);
+        let fullUrl = url.concat("/update").concat("/", id)
+
+        let config = this.getHeaderWithToken();
+        console.log('config,', config)
+        //let token = await authService.getAccessToken();
+
+        const res = await axios.put(fullUrl, params, config);
+        console.log('update returns...', res);
+        return res;
+//        let requestOptions = this.getRequestOptionsFor('PUT', token, params);
+
+        // await fetch(fullUrl, requestOptions)
+        //     .catch(alert);
+    }
+
+    // CREATE
     async post(url, params) {
         let fullUrl = url.concat("/post");
         let token = await authService.getAccessToken();
@@ -56,6 +78,7 @@ class FetchWrapper {
         return res;
     }
 
+    // DELETE
     async delete(url, id) {
         let fullUrl = url.concat("/delete").concat("/", id)
         let token = await authService.getAccessToken();
@@ -66,13 +89,15 @@ class FetchWrapper {
         
     }
 
-    async put(url, id, params) {
-        let fullUrl = url.concat("/update").concat("/", id)
+    async getHeaderWithToken() {
         let token = await authService.getAccessToken();
-        let requestOptions = this.getRequestOptionsFor('PUT', token, params);
-
-        await fetch(fullUrl, requestOptions)
-            .catch(alert);
+        return (token) ? {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            } 
+        }: {
+            // or throw exception
+        }
     }
 
     getRequestOptionsFor(method, token, params = undefined) {

@@ -59,8 +59,9 @@ namespace SpotOps.Controllers
             
             var spotResponse = new SpotResponse
             {
+                Id = spot.Id,
                 Name = spot.Name,
-                Type = string.Empty,
+                Type = spot.Type,
                 FileName = image.FileName,
                 FileImageSrc = GetImageSrc(image.GuidFileName)
             };
@@ -136,6 +137,7 @@ namespace SpotOps.Controllers
             var newSpot = new Spot
             {
                 Name = spot.Name,
+                Type = spot.Type,
                 DateCreated = DateTime.Now,
                 CreatedBy = user.Id
             };
@@ -209,10 +211,11 @@ namespace SpotOps.Controllers
         /// <param name="spot"></param>
         /// <returns></returns>
         [HttpPut("update/{id:int}")]
-        public IActionResult Put(int id, [FromBody] Spot spot)
+        public IActionResult Put([FromBody] Spot spot)
         {
             try
             {
+                var id = spot.Id;
                 var spotToEdit = _db.Spots.First(spot => spot.Id == id);
                 
                 if (spotToEdit == null)
@@ -221,6 +224,13 @@ namespace SpotOps.Controllers
                 }
 
                 spotToEdit.Name = spot.Name;
+                spotToEdit.Type = spot.Type;
+
+                var imagesToEdit = _db.SpotImages.First(img => img.Spot.Id == id);
+                
+                //TODO, get image data and modify it. 
+                //imagesToEdit
+                
                 //spotToEdit.DateModified = DateTime.Now;
                 
                 _db.SaveChanges();
