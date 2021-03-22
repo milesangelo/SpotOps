@@ -44,8 +44,8 @@ class SpotService {
         return fetchWrapper.delete(this.url, id);
     }
 
-    updateSpot(id, fields) {
-        return fetchWrapper.put(this.url, id, fields);
+    updateSpot(fields) {
+        return fetchWrapper.put(this.url, fields);
     }
 
 }
