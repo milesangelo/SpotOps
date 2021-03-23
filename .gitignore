@@ -238,4 +238,4 @@ SpotOps.Web/app.db
 .env
 *.env.DS_Store
 
-SpotOps.Web/node_modules/
+SpotOps.Web/ClientApp/node_modules/

@@ -70,11 +70,13 @@ export const SpotForm = ({
 
     // Create previews as a side effect of when selected file is changed.
     useEffect(() => {
-        if (imageFile){
+        if (imageFile) {
             const reader = new FileReader();
+            
             reader.onloadend = () => {
                 setPreview(reader.result);
             };
+
             reader.readAsDataURL(imageFile);
         }
     }, [imageFile]);
@@ -103,17 +105,17 @@ export const SpotForm = ({
         formData.append("formFile", imageFile || '');
         formData.append("fileName", (imageFile && imageFile.name) || '');
         formData.append('id', spot.id);
-
+        formData.append('fileImageSrc', preview || '');
         console.log('handle submit formData: ', formData)
 
         if (createMode.current)
         {
-            formData.append('id', 0);
+            //formData.append('id', 0);
             console.log('createSpot')
             spotService.createSpot(formData);
         }
         else {
-            formData.append('id', spot.id)
+            //formData.append('id', spot.id)
             console.log('else modifying spot')
             spotService.updateSpot(formData);
         }

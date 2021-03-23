@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 
 namespace SpotOps.ResponseModels
@@ -5,9 +6,12 @@ namespace SpotOps.ResponseModels
     public class SpotResponse
     {
         public int Id { get; set; }
+        
         public string Name { get; set; }
         
         public string Type { get; set; }
+
+        public DateTime DateCreated { get; set; }
 
         public string FileName { get; set; }
         

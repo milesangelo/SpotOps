@@ -86,6 +86,7 @@ namespace SpotOps.Controllers
                     spot.Id,
                     spot.Name,
                     spot.Type,
+                    spot.DateCreated,
                     image.OriginalFileName,
                     image.GuidFileName
                 });
@@ -97,6 +98,7 @@ namespace SpotOps.Controllers
                     Id = spotwImage.Id,
                     Name = spotwImage.Name,
                     Type = spotwImage.Type,
+                    DateCreated = spotwImage.DateCreated,
                     FileName = spotwImage.OriginalFileName,
                     FileImageSrc = GetImageSrc(spotwImage.GuidFileName)
                 });
@@ -208,30 +210,49 @@ namespace SpotOps.Controllers
         /// 
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="spot"></param>
+        /// <param name="spotResponse"></param>
         /// <returns></returns>
         [HttpPut("update/{id:int}")]
-        public IActionResult Put([FromBody] Spot spot)
+        public IActionResult Put([FromForm] SpotResponse spotResponse)
         {
             try
             {
-                var id = spot.Id;
-                var spotToEdit = _db.Spots.First(spot => spot.Id == id);
+                var id = spotResponse.Id;
+                var spotToEdit = _db.Spots.First(spt => spt.Id == id);
                 
                 if (spotToEdit == null)
                 {
                     return NotFound($"Spot with id = {id} was not found.");
                 }
 
-                spotToEdit.Name = spot.Name;
-                spotToEdit.Type = spot.Type;
+                spotToEdit.Name = spotResponse.Name;
+                spotToEdit.Type = spotResponse.Type;
 
-                var imagesToEdit = _db.SpotImages.First(img => img.Spot.Id == id);
-                
-                //TODO, get image data and modify it. 
-                //imagesToEdit
-                
-                //spotToEdit.DateModified = DateTime.Now;
+                // Handle copying image to physical location.
+                if (spotResponse.FormFile != null)
+                {
+                    try
+                    {
+                        var spotImage = _db.SpotImages.First(img => img.Spot.Id == id);
+                        var fileExtension = Path.GetExtension(spotResponse.FileName);
+
+                        spotImage.Spot = spotToEdit;
+                        spotImage.PathToFile = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                        spotImage.Guid = Guid.NewGuid().ToString();
+                        spotImage.FileName = spotResponse.FileName;
+                        spotImage.ImageType = fileExtension;
+                        
+                        var path = Path.Combine(spotImage.PathToFile, spotImage.Guid + spotImage.ImageType);
+                        using (Stream stream = new FileStream(path, FileMode.Create))
+                        {
+                            spotResponse.FormFile.CopyTo(stream);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest();
+                    }
+                }
                 
                 _db.SaveChanges();
                 
