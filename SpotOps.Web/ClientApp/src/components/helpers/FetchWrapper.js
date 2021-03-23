@@ -48,16 +48,23 @@ class FetchWrapper {
 
         let id = params.get('id');
         console.log('id is ', id);
+        
         let fullUrl = url.concat("/update").concat("/", id)
+        let token = await authService.getAccessToken();
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'content-type': 'multipart/form-data'
+            }
+        }
 
-        let config = this.getHeaderWithToken();
         console.log('config,', config)
-        //let token = await authService.getAccessToken();
 
         const res = await axios.put(fullUrl, params, config);
+        
         console.log('update returns...', res);
         return res;
-//        let requestOptions = this.getRequestOptionsFor('PUT', token, params);
+        // let requestOptions = this.getRequestOptionsFor('PUT', token, params);
 
         // await fetch(fullUrl, requestOptions)
         //     .catch(alert);
