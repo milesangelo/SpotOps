@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using SpotOps.Services;
 
 namespace SpotOps
 {
@@ -38,8 +39,7 @@ namespace SpotOps
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddHttpContextAccessor();
-            //services.AddSingleton<IHttpClientFactory, >()
+
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -57,6 +57,9 @@ namespace SpotOps
             
             
             services.AddControllersWithViews();
+            services.AddHttpContextAccessor();
+            services.AddTransient<ISpotResponseService, SpotResponseService>();
+            
             services.AddRazorPages();
 
             // In production, the React files will be served from this directory
