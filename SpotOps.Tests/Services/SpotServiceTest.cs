@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Moq;
+using Microsoft.Extensions.DependencyInjection;
 using SpotOps.Data;
 using SpotOps.Models;
 using SpotOps.ResponseModels;
@@ -14,45 +12,27 @@ namespace SpotOps.Tests.Services
 {
     public class SpotResponseServiceTests : IDisposable
     {
-        private DbContextOptions options;
+        private DbContextOptions<ApplicationDbContext> _options;
         
+        /// <summary>
+        /// 
+        /// </summary>
         public SpotResponseServiceTests()
         {
-            options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "SpotOpsDatabase")
-                .Options;
+            _options = new MockDbContextOptions().CreateNewContextOptions();
         }
 
         [Fact]
-        public void GetAllSpots_ShouldReturnAllSpots()
+        public void GetAll_When_CalledWithExistingData_Should_ReturnAllSpots()
         {
-            using (var context = new ApplicationDbContext(options,  new OperationalStoreOptionsMigrations()))
-            {
-                context.Spots.Add(new Spot
-                {
-                    Name = "Denver Skatepark",
-                    Type = "Park"
-                });
-
-                context.Spots.Add(new Spot
-                {
-                    Name = "Colfax Sub-box",
-                    Type = "Street"
-                });
-                
-                context.SaveChanges();
-            }
+            // Arrange
+            Seed();
             
             // Act - use a clean instance of the context to run the test
-            using (var context = new ApplicationDbContext(options, new OperationalStoreOptionsMigrations()))
+            using (var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations()))
             {
                 // Arrange
-                var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-                var httpContext = new DefaultHttpContext();
-
-                mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(httpContext);
-
-                var spotService = new SpotResponseService(context, mockHttpContextAccessor.Object);
+                var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetDefaultMock().Object);
                 
                 // Act
                 ICollection<SpotResponse> spots = spotService.GetAll();
@@ -62,20 +42,53 @@ namespace SpotOps.Tests.Services
             }
         }
 
+        private void Seed()
+        {
+            using (var context = new ApplicationDbContext(_options,  new OperationalStoreOptionsMigrations()))
+            {
+                var spot1 = context.Spots.Add(new Spot
+                {
+                    Name = "Denver Skatepark",
+                    Type = "Park"
+                });
+
+                context.SpotImages.Add(new SpotImage()
+                {
+                    FileName = "test1.jpg",
+                    Guid = new Guid().ToString(),
+                    ImageType = ".jpg",
+                    Spot = spot1.Entity
+                });
+                
+                var spot2 = context.Spots.Add(new Spot
+                {
+                    Name = "Colfax Sub-box",
+                    Type = "Street"
+                });
+
+                context.SpotImages.Add(new SpotImage()
+                {
+                    FileName = "test2.jpeg",
+                    Guid = new Guid().ToString(),
+                    ImageType = ".jpeg",
+                    Spot = spot2.Entity
+                });
+                
+                context.SaveChanges();
+            }
+        }
+
         [Fact]
         public async void GetSpotById_ShouldReturnSpotWithId()
         {
-            using (var context = new ApplicationDbContext(options, new OperationalStoreOptionsMigrations()))
+            using (var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations()))
             {
                 // Arrange
+                Seed();
+                
                 int idToFind = 1;
-                var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-                var httpContext = new DefaultHttpContext();
-
-                mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(httpContext);
-
-                var spotService = new SpotResponseService(context, mockHttpContextAccessor.Object);
-                CreateMockSpotData();
+                
+                var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetDefaultMock().Object);
 
                 // Act
                 SpotResponse spot = await spotService.GetById(idToFind);
@@ -85,27 +98,7 @@ namespace SpotOps.Tests.Services
                 
             }
         }
-
-        private void CreateMockSpotData()
-        {
-            using (var context = new ApplicationDbContext(options,  new OperationalStoreOptionsMigrations()))
-            {
-                context.Spots.Add(new Spot
-                {
-                    Name = "Denver Skatepark",
-                    Type = "Park"
-                });
-
-                context.Spots.Add(new Spot
-                {
-                    Name = "Colfax Sub-box",
-                    Type = "Street"
-                });
-                
-                context.SaveChanges();
-            }
-        }
-
+        
         public void Dispose()
         {
             //throw new NotImplementedException();
