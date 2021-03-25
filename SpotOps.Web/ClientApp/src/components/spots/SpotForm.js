@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import authService from '../api-authorization/AuthorizeService';
+//import axios from 'axios';
+//import authService from '../api-authorization/AuthorizeService';
 import spotService from './SpotService';
 // import { Formik, Form, Field, ErrorMessage } from 'formik';
 // import { Link } from 'react-router-dom'
@@ -51,7 +51,6 @@ export const SpotForm = ({
         if (!createMode.current) {
             getSpotById(id);
         }
-
     }, []);
 
     const getSpotById = async(id) => {
