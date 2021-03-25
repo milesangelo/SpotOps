@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using Shouldly;
 using SpotOps.Controllers;
 using SpotOps.Data;
@@ -20,24 +17,22 @@ namespace SpotOps.Tests.Controllers
         
         public SpotsControllerTest()
         {
-            _options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "SpotOpsDatabase")
-                .Options;
+            // _options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            //     .UseInMemoryDatabase(databaseName: "SpotOpsDatabase")
+            //     .Options;
+
+            _options = new MockDbContextOptions().CreateNewContextOptions();
         }
 
         [Fact]
         public void GetById_When_CalledWithValidId_Should_ReturnOkObjectResult()
         {
             // Arrange
-            Seed(_options);
+            Seed();
 
             using (var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations()))
             {
-                var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-                var httpContext = new DefaultHttpContext();
-                mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(httpContext);
-
-                var spotService = new SpotResponseService(context, mockHttpContextAccessor.Object);
+                var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetDefaultMock().Object);
                 var spotController = new SpotsController(spotService);
                 
                 // Act
@@ -53,16 +48,14 @@ namespace SpotOps.Tests.Controllers
         public void GetById_When_CalledWithValidId_Should_ReturnSpotResponse()
         {
             // Arrange
-            Seed(_options);
+            Seed();
 
             using (var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations()))
             {
-                var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-                var httpContext = new DefaultHttpContext();
-
-                mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(httpContext);
-                
-                var spotController = new SpotsController(new SpotResponseService(context, mockHttpContextAccessor.Object));
+                var spotController = new SpotsController(
+                    new SpotResponseService(
+                        context, 
+                        new MockHttpContextAccessor().GetDefaultMock().Object));
 
                 // Act
                 var okResult = spotController.GetById(1).Result as OkObjectResult;
@@ -74,12 +67,11 @@ namespace SpotOps.Tests.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Fills the mock database with two spots and two spot images.
         /// </summary>
-        /// <param name="dbContextOptions"></param>
-        private void Seed(DbContextOptions<ApplicationDbContext> dbContextOptions)
+        private void Seed()
         {
-            using (var context = new ApplicationDbContext(dbContextOptions,  new OperationalStoreOptionsMigrations()))
+            using (var context = new ApplicationDbContext(_options,  new OperationalStoreOptionsMigrations()))
             {
                 var spot1 = context.Spots.Add(new Spot
                 {
@@ -90,7 +82,7 @@ namespace SpotOps.Tests.Controllers
                 context.SpotImages.Add(new SpotImage()
                 {
                     FileName = "test1.jpg",
-                    Guid = new Guid().ToString(),
+                    Guid = Guid.NewGuid().ToString(),
                     ImageType = ".jpg",
                     Spot = spot1.Entity
                 });
@@ -104,7 +96,7 @@ namespace SpotOps.Tests.Controllers
                 context.SpotImages.Add(new SpotImage()
                 {
                     FileName = "test2.jpeg",
-                    Guid = new Guid().ToString(),
+                    Guid = Guid.NewGuid().ToString(),
                     ImageType = ".jpeg",
                     Spot = spot2.Entity
                 });
@@ -158,25 +150,6 @@ namespace SpotOps.Tests.Controllers
         //     Assert.IsAssignableFrom<ICollection<SpotResponse>>(spotResponses);
         //     Assert.Equal(2, spotResponses.Count);
         // }
-
-        // private void CreateTestData()
-        // {
-        //     using (var context = new ApplicationDbContext(_options,  new OperationalStoreOptionsMigrations()))
-        //     {
-        //         context.Spots.Add(new Spot
-        //         {
-        //             Name = "Denver Skatepark",
-        //             Type = "Park"
-        //         });
-        //
-        //         context.Spots.Add(new Spot
-        //         {
-        //             Name = "Colfax Sub-box",
-        //             Type = "Street"
-        //         });
-        //         
-        //         context.SaveChanges();
-        //     }
-        //}
+        
     }
 }
