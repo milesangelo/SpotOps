@@ -17,10 +17,6 @@ namespace SpotOps.Tests.Controllers
         
         public SpotsControllerTest()
         {
-            // _options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            //     .UseInMemoryDatabase(databaseName: "SpotOpsDatabase")
-            //     .Options;
-
             _options = new MockDbContextOptions().CreateNewContextOptions();
         }
 
