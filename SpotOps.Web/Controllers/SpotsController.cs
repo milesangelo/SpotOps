@@ -58,40 +58,8 @@ namespace SpotOps.Controllers
             {
                 return NotFound();
             }
-            //
-            // ICollection<SpotResponse> spotResponses = new List<SpotResponse>();
-            //
-            // var spotsWithImage = _db.Spots.Join(_db.SpotImages,
-            //     spt => spt.Id,
-            //     img => img.Spot.Id,
-            //     (spot, image) => new
-            //     {
-            //         spot.Id,
-            //         spot.Name,
-            //         spot.Type,
-            //         spot.DateCreated,
-            //         image.OriginalFileName,
-            //         image.GuidFileName
-            //     });
-            //
-            // foreach (var spotwImage in spotsWithImage)
-            // {
-            //     spotResponses.Add(new SpotResponse
-            //     {
-            //         Id = spotwImage.Id,
-            //         Name = spotwImage.Name,
-            //         Type = spotwImage.Type,
-            //         DateCreated = spotwImage.DateCreated,
-            //         FileName = spotwImage.OriginalFileName,
-            //         FileImageSrc = GetImageSrc(spotwImage.GuidFileName)
-            //     });
-            // }
-            //
-            // return Ok(spotResponses);
         }
         
-        
-
         /// <summary>
         /// 
         /// </summary>
@@ -100,79 +68,39 @@ namespace SpotOps.Controllers
         [HttpPost("post")]
         public async Task<ActionResult> Post([FromForm] SpotResponse spot)
         {
-            // var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            // var user = _db.Users.First(user => user.Id.Equals(userId));
-            //
-            // // Create a new spot & save changes to get spot id fore spot image.
-            // var newSpot = new Spot
-            // {
-            //     Name = spot.Name,
-            //     Type = spot.Type,
-            //     DateCreated = DateTime.Now,
-            //     CreatedBy = user.Id
-            // };
-            //
-            // await _db.Spots.AddAsync(newSpot);
-            //
-            // SpotImage spotImage = new SpotImage();
-            // try
-            // {
-            //     var fileExtension = Path.GetExtension(spot.FileName);
-            //
-            //     spotImage.Spot = newSpot;
-            //     spotImage.PathToFile = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            //     spotImage.Guid = Guid.NewGuid().ToString();
-            //     spotImage.FileName = spot.FileName;
-            //     spotImage.ImageType = fileExtension;
-            //     spotImage.CreatedBy = user.Id;
-            //     
-            //     var path = Path.Combine(spotImage.PathToFile, spotImage.Guid + spotImage.ImageType);
-            //     using (Stream stream = new FileStream(path, FileMode.Create))
-            //     {
-            //         spot.FormFile.CopyTo(stream);
-            //     }
-            // }
-            // catch (Exception ex)
-            // {
-            //     return BadRequest();
-            // }
-            //
-            // await _db.SpotImages.AddAsync(spotImage);
-            //
-            // await _db.SaveChangesAsync();
-            //
-            //
-             return Ok();
+            try
+            {
+                return Ok(_service.Add(spot));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         /// <summary>
-        /// 
+        /// Action method for deleting a spot (and respective images) from current db context.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("delete/{id:int}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            // try
-            // {
-            //     var spotToDelete = _db.Spots.First(spot => spot.Id == id);
-            //
-            //     if (spotToDelete == null)
-            //     {
-            //         return NotFound($"Spot with id = {id} was not found.");
-            //     }
-            //
-            //     _db.Spots.Remove(spotToDelete);
-            //     _db.SaveChanges();
-            //
-            //     return Ok();
-            // }
-            // catch (Exception e)
-            // {
-            //     Console.WriteLine(e);
-            //     return StatusCode(StatusCodes.Status500InternalServerError);
-            // }
-            return Ok();
+            try
+            {
+                var isDeleted = await _service.Remove(id);
+
+                if (isDeleted)
+                {
+                    return Ok();
+                }
+                
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,7 +10,32 @@ namespace SpotOps.Services
 {
     public interface ISpotResponseService
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
         Task<SpotResponse> GetById(int i);
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         Task<ICollection<SpotResponse>> GetAsync();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="spotResponse"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        Task<SpotResponse> Add(SpotResponse spotResponse);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<bool> Remove(int id);
     }
 }
