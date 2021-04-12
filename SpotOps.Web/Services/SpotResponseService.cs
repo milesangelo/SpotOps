@@ -200,7 +200,10 @@ namespace SpotOps.Services
             return await _context.Spots
                 .Select(spt => new SpotResponse
                     {
-                        Name = spt.Name
+                        Name = spt.Name,
+                        Id = spt.Id,
+                        DateCreated = spt.DateCreated,
+                        Type = spt.Type,
                     }).ToListAsync();
         }
 
