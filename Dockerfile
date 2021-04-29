@@ -1,25 +1,25 @@
 # https://hub.docker.com/_/microsoft-dotnet
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-WORKDIR /build
+#WORKDIR /build
 
 RUN curl -sL https://deb.nodesource.com/setup_10.x |  bash -
 RUN apt-get install -y nodejs
 
-# copy csproj and restore as distinct layers
-COPY ./*.csproj .
-RUN dotnet restore
-
-# copy everything else and build app
+# Copy source from machine onto the container
+WORKDIR /src
 COPY . .
-WORKDIR /build
-RUN dotnet publish -c release -o published --no-cache
+
+RUN npm install axios
+RUN npm install
+
+RUN dotnet restore "./SpotOps.Web/SpotOps.csproj"
+RUN dotnet publish "./SpotOps.Web/SpotOps.csproj" -c release -o /app/publish
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
-WORKDIR /app
 
 # Expose port 80 to your local machine so you can access the app.
 EXPOSE 80
 
-COPY --from=build /build/published ./
-ENTRYPOINT ["dotnet", "react-dotnet-example.dll"]
+COPY --from=build /app/publish ./
+ENTRYPOINT ["dotnet", "spotops.dll"]
