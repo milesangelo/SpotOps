@@ -11,6 +11,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
         nodejs \
     && rm -rf /var/lib/apt/lists/*
 
+RUN npm install -g axios 
+
 WORKDIR /src
 COPY ["SpotOps.Web/SpotOps.csproj", "SpotOps.Web/"]
 RUN dotnet restore "SpotOps.Web/SpotOps.csproj"
