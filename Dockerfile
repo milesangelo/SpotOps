@@ -1,25 +1,27 @@
-# https://hub.docker.com/_/microsoft-dotnet
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-#WORKDIR /build
-
-RUN curl -sL https://deb.nodesource.com/setup_10.x |  bash -
-RUN apt-get install -y nodejs
-
-# Copy source from machine onto the container
-WORKDIR /src
-COPY . .
-
-RUN npm install axios
-RUN npm install
-
-RUN dotnet restore "./SpotOps.Web/SpotOps.csproj"
-RUN dotnet publish "./SpotOps.Web/SpotOps.csproj" -c release -o /app/publish
-
-# final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
-
-# Expose port 80 to your local machine so you can access the app.
+﻿FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+WORKDIR /app
 EXPOSE 80
+EXPOSE 443
 
-COPY --from=build /app/publish ./
-ENTRYPOINT ["dotnet", "spotops.dll"]
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
+    && apt-get install -y \
+        nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY ["SpotOps.Web/SpotOps.csproj", "SpotOps.Web/"]
+RUN dotnet restore "SpotOps.Web/SpotOps.csproj"
+COPY . .
+WORKDIR "/src/SpotOps.Web"
+RUN dotnet build "SpotOps.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "SpotOps.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "SpotOps.dll"]
