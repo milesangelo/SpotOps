@@ -1,15 +1,6 @@
 # SpotOps
-Skateboard/BMX/Extreme Sports Spot Library
+Skate Spot Library Application
 
+Using .Net 5 web api back-end communicating with a React.js front-end
 
-How to get started on project tasks:
-
-Clone the repo:
-
-Create the db using makefile:
-
-Build SpotOps.Web solution:
-
-Run SpotOps.Web solution:
-
-
+There are plenty of good issues containing small enhancements and bug-fixes for this project.
