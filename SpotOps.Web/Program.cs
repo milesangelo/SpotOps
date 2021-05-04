@@ -20,6 +20,7 @@ namespace SpotOps
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseUrls("http://localhost:80");
                     webBuilder.UseStartup<Startup>();
                 });
     }
