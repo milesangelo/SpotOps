@@ -1,6 +1,15 @@
 # SpotOps
-Skate Spot Library Application
 
-Using .Net 5 web api back-end communicating with a React.js front-end
+Are you & your friends road tripping across the states? 
+Are you itching to end the day on a sweet manual pad only a block or two down the road?
+Do you need a banger clip to put on your insta story?
+Looking for that steel structure Dennis Enarson gap whipped?
+Do you & the homies have some hidden gems you'd rather gatekeep 
+instead of sharing with out-of-towners?
 
-There are plenty of good issues containing small enhancements and bug-fixes for this project.
+Well, look no further than...
+
+## SpotOps!
+
+- Search, add, create spots for yourself or within a group!
+- Filter by location, type, and more!
