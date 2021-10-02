@@ -21,7 +21,7 @@ namespace SpotOps.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        Task<ICollection<SpotResponse>> GetAsync();
+        Task<ICollection<SpotResponse>> GetAll();
 
         /// <summary>
         /// 

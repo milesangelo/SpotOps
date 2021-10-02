@@ -28,7 +28,11 @@ namespace SpotOps.Tests.Controllers
 
             using (var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations()))
             {
-                var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetDefaultMock().Object);
+                var spotService = new SpotResponseService(
+                    new MockHttpContextAccessor().GetDefaultMock().Object,
+                    new SpotService(context),
+                    new SpotImageService(context),
+                    new UserService(context));
                 var spotController = new SpotsController(spotService);
                 
                 // Act
@@ -50,8 +54,11 @@ namespace SpotOps.Tests.Controllers
             {
                 var spotController = new SpotsController(
                     new SpotResponseService(
-                        context, 
-                        new MockHttpContextAccessor().GetDefaultMock().Object));
+                        new MockHttpContextAccessor().GetDefaultMock().Object,
+                        new SpotService(context),
+                        new SpotImageService(context),
+                        new UserService(context))
+                    );
 
                 // Act
                 var okResult = spotController.GetById(1).Result as OkObjectResult;

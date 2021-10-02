@@ -52,7 +52,7 @@ namespace SpotOps.Controllers
         {
             try
             {
-                return Ok(await _service.GetAsync());
+                return Ok(await _service.GetAll());
             }
             catch (Exception e)
             {

@@ -6,8 +6,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using SpotOps.Data;
 using SpotOps.Models;
 using SpotOps.ResponseModels;
 
@@ -18,33 +16,69 @@ namespace SpotOps.Services
         /// <summary>
         /// 
         /// </summary>
-        private ApplicationDbContext _context;
-        
-        /// <summary>
-        /// 
-        /// </summary>
         private IHttpContextAccessor _httpContextAccessor;
-         
+
+        /// <summary>
+        /// Spot service handling all spot data.
+        /// </summary>
+        private ISpotService _spotService;
+
+        /// <summary>
+        /// Spot Image handling service.
+        /// </summary>
+        private ISpotImageService _spotImageService;
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="context"></param>
+        private IUserService _userService;
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="httpContextAccessor"></param>
-        public SpotResponseService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        /// <param name="spotService"></param>
+        /// <param name="spotImageService"></param>
+        /// <param name="userService"></param>
+        public SpotResponseService(
+            IHttpContextAccessor httpContextAccessor,
+            ISpotService spotService,
+            ISpotImageService spotImageService,
+            IUserService userService)
         {
-            _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _spotService = spotService;
+            _spotImageService = spotImageService;
+            _userService = userService;
         }
 
         /// <summary>
         /// Returns a collection of all SpotResponses in the current ApplicationDbContext
         /// </summary>
         /// <returns></returns>
-        public ICollection<SpotResponse> GetAll()
+        public async Task<ICollection<SpotResponse>> GetAll()
         {
             ICollection<SpotResponse> spotResponses = new List<SpotResponse>();
+
+            var spots = await _spotService.GetAll();
+            var spotImages = await _spotImageService.GetAll();
+    
+            // Take the faster one, time them with a stopwatch!
+            var joinedSpots = from l1 in spots 
+                join l2 in spotImages 
+                    on l1.Id equals l2.Spot.Id
+                select new
+                {
+                    l1.Id,
+                    l1.Name,
+                    l1.Type,
+                    l1.DateCreated,
+                    l2.OriginalFileName,
+                    l2.GuidFileName
+                };
             
-            var spots = _context.Spots.Join(_context.SpotImages,
+            // or is this one faster....
+            var spotsToReturn = spots.Join(spotImages, 
                 spt => spt.Id,
                 img => img.Spot.Id,
                 (spot, image) => new
@@ -57,16 +91,17 @@ namespace SpotOps.Services
                     image.GuidFileName
                 });
             
-            foreach (var spotwImage in spots)
+            // create a spot response for each record
+            foreach (var joinedSpot in joinedSpots)
             {
                 spotResponses.Add(new SpotResponse
                 {
-                    Id = spotwImage.Id,
-                    Name = spotwImage.Name,
-                    Type = spotwImage.Type,
-                    DateCreated = spotwImage.DateCreated,
-                    FileName = spotwImage.OriginalFileName,
-                    FileImageSrc = GetImageSrc(spotwImage.GuidFileName)
+                    Id = joinedSpot.Id,
+                    Name = joinedSpot.Name,
+                    Type = joinedSpot.Type,
+                    DateCreated = joinedSpot.DateCreated,
+                    FileName = joinedSpot.OriginalFileName,
+                    FileImageSrc = GetImageSrc(joinedSpot.GuidFileName)
                 });
             }
             
@@ -80,16 +115,13 @@ namespace SpotOps.Services
         /// <returns></returns>
         public async Task<SpotResponse> GetById(int id)
         {
-            var spot = await _context.Spots
-                    .FirstOrDefaultAsync(spt => spt.Id == id);
-            
+            var spot = await _spotService.GetById(id);
             if (spot == null)
             {
                 return null;
             }
-            
-            var image = await _context.SpotImages
-                .FirstOrDefaultAsync(img => img.Spot.Equals(spot));
+
+            var image = await _spotImageService.GetBySpotId(spot.Id);
             
             var spotResponse = new SpotResponse
             {
@@ -111,50 +143,42 @@ namespace SpotOps.Services
         /// <exception cref="Exception"></exception>
         public async Task<SpotResponse> Add(SpotResponse spotResponse)
         {
-            try
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userService.GetById(userId);
+
+            var fileExtension = Path.GetExtension(spotResponse.FileName);
+
+            // Create a new spot & save changes to get spot id fore spot image.
+            var newSpot = new Spot
             {
-                var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = _context.Users.First(usr => usr.Id.Equals(userId));
+                Name = spotResponse.Name,
+                Type = spotResponse.Type,
+                DateCreated = DateTime.Now,
+                CreatedBy = user.Id
+            };
 
-                var fileExtension = Path.GetExtension(spotResponse.FileName);
-
-                // Create a new spot & save changes to get spot id fore spot image.
-                var newSpot = new Spot
-                {
-                    Name = spotResponse.Name,
-                    Type = spotResponse.Type,
-                    DateCreated = DateTime.Now,
-                    CreatedBy = user.Id
-                };
-
-                SpotImage spotImage = new SpotImage
-                {
-                    Spot = newSpot,
-                    PathToFile = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
-                    Guid = Guid.NewGuid().ToString(),
-                    FileName = spotResponse.FileName,
-                    ImageType = fileExtension,
-                    CreatedBy = user.Id
-                };
-                
-                var path = Path.Combine(spotImage.PathToFile, spotImage.Guid + spotImage.ImageType);
-                using (Stream stream = new FileStream(path, FileMode.Create))
-                {
-                    spotResponse.FormFile.CopyTo(stream);
-                }
-
-                await _context.Spots.AddAsync(newSpot);
-                await _context.SpotImages.AddAsync(spotImage);
-                await _context.SaveChangesAsync();
-
-                spotResponse.Id = newSpot.Id;
-                
-                return spotResponse;
-            }
-            catch (Exception ex)
+            SpotImage spotImage = new SpotImage
             {
-                throw ex;
+                Spot = newSpot,
+                PathToFile = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+                Guid = Guid.NewGuid().ToString(),
+                FileName = spotResponse.FileName,
+                ImageType = fileExtension,
+                CreatedBy = user.Id
+            };
+                
+            var path = Path.Combine(spotImage.PathToFile, spotImage.Guid + spotImage.ImageType);
+            using (Stream stream = new FileStream(path, FileMode.Create))
+            {
+                spotResponse.FormFile.CopyTo(stream);
             }
+
+            await _spotService.AddAsync(newSpot);
+            await _spotImageService.AddAsync(spotImage);
+                
+            spotResponse.Id = newSpot.Id;
+                
+            return spotResponse;
         }
 
         /// <summary>
@@ -168,21 +192,18 @@ namespace SpotOps.Services
             try
             {
                 // Get the spot with matching id.
-                var spotToDelete = await _context.Spots
-                    .FirstOrDefaultAsync(spot => spot.Id == id);
+                var spotToDelete = await _spotService.GetById(id);
+                    //.Spots.FirstOrDefaultAsync(spot => spot.Id == id);
                
                 if (spotToDelete == null)
                 {
                     return false;
                 }
                 
-                // Get the spot image record with
-                var imageToDelete = _context.SpotImages
-                    .FirstOrDefaultAsync(image => image.Spot.Id.Equals(spotToDelete.Id));
-                
-                _context.Spots.Remove(spotToDelete);
-                _context.SaveChanges();
-                
+                var imageToDelete = _spotImageService.Remove(spotToDelete.Id);
+                    //.SpotImages.FirstOrDefaultAsync(image => image.Spot.Id.Equals(spotToDelete.Id));
+                await _spotService.Remove(spotToDelete.Id);
+                //_context.Spots.Remove(spotToDelete);
                 return true;
             }
             catch (Exception ex)
@@ -190,23 +211,7 @@ namespace SpotOps.Services
                 throw ex;
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public async Task<ICollection<SpotResponse>> GetAsync()
-        {
-            return await _context.Spots
-                .Select(spt => new SpotResponse
-                    {
-                        Name = spt.Name,
-                        Id = spt.Id,
-                        DateCreated = spt.DateCreated,
-                        Type = spt.Type,
-                    }).ToListAsync();
-        }
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -214,13 +219,18 @@ namespace SpotOps.Services
         /// <returns></returns>
         public string GetImageSrc(string fileName)
         {
-            return fileName.IsNullOrEmpty()
-                ? string.Empty
-                : string.Format("{0}://{1}{2}/images/{3}",
-                    _httpContextAccessor.HttpContext.Request.Scheme,
-                    _httpContextAccessor.HttpContext.Request.Host,
-                    _httpContextAccessor.HttpContext.Request.PathBase,
-                    fileName);
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                return fileName.IsNullOrEmpty()
+                    ? string.Empty
+                    : string.Format("{0}://{1}{2}/images/{3}",
+                        _httpContextAccessor.HttpContext.Request.Scheme,
+                        _httpContextAccessor.HttpContext.Request.Host,
+                        _httpContextAccessor.HttpContext.Request.PathBase,
+                        fileName);
+            }
+            
+            return string.Empty;
         }
     }
 }

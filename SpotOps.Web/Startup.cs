@@ -38,8 +38,7 @@ namespace SpotOps
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-
-
+            
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -49,16 +48,16 @@ namespace SpotOps
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
-            services.Configure<JwtBearerOptions>(IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
-                options =>
-                {
-
-                });
-            
+            services.Configure<JwtBearerOptions>(
+                IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
+                options => { });
             
             services.AddControllersWithViews();
             services.AddHttpContextAccessor();
             services.AddTransient<ISpotResponseService, SpotResponseService>();
+            services.AddTransient<ISpotService, SpotService>();
+            services.AddTransient<ISpotImageService, SpotImageService>();
+            services.AddTransient<IUserService, UserService>();
             
             services.AddRazorPages();
 
