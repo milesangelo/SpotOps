@@ -114,7 +114,7 @@ namespace SpotOps
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    spa.UseProxyToSpaDevelopmentServer(npmScript: "start");
                 }
             });
         }
