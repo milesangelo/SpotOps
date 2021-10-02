@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using SpotOps.Data;
 using SpotOps.Models;
 using SpotOps.ResponseModels;
@@ -29,8 +27,21 @@ namespace SpotOps.Tests.Services
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private SpotResponseService CreateNewSpotResponseObject(ApplicationDbContext context)
+        {
+            return new SpotResponseService(new MockHttpContextAccessor().GetDefaultMock().Object, 
+                new SpotService(context),
+                new SpotImageService(context), 
+                new UserService(context));
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
         [Fact]
-        public void GetAll_When_CalledWithExistingData_Should_ReturnAllSpots()
+        public async void GetAll_When_CalledWithExistingData_Should_ReturnAllSpotResponses()
         {
             // Arrange
             Seed();
@@ -39,10 +50,11 @@ namespace SpotOps.Tests.Services
             using (var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations()))
             {
                 // Arrange
-                var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetDefaultMock().Object);
+                var spotService = new SpotResponseService(new MockHttpContextAccessor().GetDefaultMock().Object, new SpotService(context),
+                    new SpotImageService(context), new UserService(context));
                 
                 // Act
-                ICollection<SpotResponse> spots = spotService.GetAll();
+                ICollection<SpotResponse> spots = await spotService.GetAll();
                 
                 // Assert
                 Assert.Equal(2, spots.Count);
@@ -60,10 +72,10 @@ namespace SpotOps.Tests.Services
                 // Arrange
                 Seed();
                 int idToFind = 1;
-                var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetDefaultMock().Object);
+                var spotResponseService = CreateNewSpotResponseObject(context);
 
                 // Act
-                SpotResponse spot = await spotService.GetById(idToFind);
+                SpotResponse spot = await spotResponseService.GetById(idToFind);
                 
                 // Assert
                 Assert.Equal(idToFind, spot.Id);
@@ -109,8 +121,8 @@ namespace SpotOps.Tests.Services
                     FileName = file.FileName,
                     FormFile = file
                 };
-                
-                var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetMockWithUser().Object);
+
+                var spotService = CreateNewSpotResponseObject(context);
 
                 // Act
                  var addedSpotResponse = await spotService.Add(spotResponse);
@@ -135,7 +147,7 @@ namespace SpotOps.Tests.Services
             
             // Act
             var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations());
-            var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetDefaultMock().Object);
+            var spotService = CreateNewSpotResponseObject(context);
 
             int idToDelete = 1;
             
@@ -158,15 +170,17 @@ namespace SpotOps.Tests.Services
             // Arrange
             Seed();
             
-            var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations());
-            var spotService = new SpotResponseService(context, new MockHttpContextAccessor().GetDefaultMock().Object);
+            using (var context = new ApplicationDbContext(_options, new OperationalStoreOptionsMigrations()))
+            {
+                var spotService = CreateNewSpotResponseObject(context);
             
-            // Act
-            int idToDelete = 99;
-            var result = await spotService.Remove(idToDelete);
+                // Act
+                int idToDelete = 99;
+                var result = await spotService.Remove(idToDelete);
             
-            // Assert
-            result.ShouldBe(false);
+                // Assert
+                result.ShouldBe(false);
+            }
         }
 
         /// <summary>
@@ -208,6 +222,9 @@ namespace SpotOps.Tests.Services
             }
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
         public void Dispose()
         {
             //throw new NotImplementedException();
