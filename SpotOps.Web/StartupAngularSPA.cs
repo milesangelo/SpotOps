@@ -1,10 +1,10 @@
-using System.IO;
+﻿using System.IO;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using SpotOps.Data;
 using SpotOps.Models;
@@ -16,9 +16,9 @@ using SpotOps.Services;
 
 namespace SpotOps
 {
-    public class Startup
+    public class StartupAngularSpa
     {
-        public Startup(IConfiguration configuration)
+        public StartupAngularSpa(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -33,7 +33,7 @@ namespace SpotOps
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
+
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -46,18 +46,17 @@ namespace SpotOps
             services.Configure<JwtBearerOptions>(
                 IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
                 options => { });
-            
+
             services.AddControllersWithViews();
             services.AddHttpContextAccessor();
             services.AddTransient<ISpotResponseService, SpotResponseService>();
             services.AddTransient<ISpotService, SpotService>();
             services.AddTransient<ISpotImageService, SpotImageService>();
             services.AddTransient<IUserService, UserService>();
-            
+
             services.AddRazorPages();
 
-            // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
+            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "spotops-ui/dist"; });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,22 +75,24 @@ namespace SpotOps
             }
 
             app.UseHttpsRedirection();
-            
+
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "wwwroot")),
-                RequestPath = "/images" 
+                RequestPath = "/images"
             });
-            
-            app.UseSpaStaticFiles();
+
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
 
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseIdentityServer();
-            
+
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -102,11 +103,11 @@ namespace SpotOps
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "ClientApp";
+                spa.Options.SourcePath = "spotops-ui";
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    spa.UseAngularCliServer(npmScript: "start");
                 }
             });
         }
