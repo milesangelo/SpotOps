@@ -1,5 +1,3 @@
-#define USE_ANGULAR_STARTUP 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace SpotOps
+namespace SpotOps.Web
 {
     public class Program
     {
@@ -18,22 +16,8 @@ namespace SpotOps
             CreateHostBuilder(args).Build().Run();
         }
 
-#if USE_ANGULAR_STARTUP
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<StartupAngularSpa>();
-                });
-#else 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseUrls("http://localhost:3000");
-                    webBuilder.UseStartup<Startup>();
-                });
-#endif
-        
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }
