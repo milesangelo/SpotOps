@@ -6,6 +6,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using System.Net.Http;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.SpaServices.AngularDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,6 +54,13 @@ namespace SpotOps.Web
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "SpotOps.Web", Version = "v1"});
             });
+            services.AddRazorPages();
+
+            // // In production, the React files will be served from this directory
+            // services.AddSpaStaticFiles(configuration =>
+            // {
+            //     configuration.RootPath = "spotops-ui/build";
+            // });
         }
 
         /// <summary>
@@ -69,6 +84,15 @@ namespace SpotOps.Web
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "../spotops-ui";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseAngularServer(npmScript: "start");
+                }
+            });
         }
     }
 }
