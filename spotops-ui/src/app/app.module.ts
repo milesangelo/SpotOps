@@ -3,24 +3,19 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SpotComponent } from './spot/spot.component';
-import { SpotFormComponent } from './spot/spot-form/spot-form.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule,  } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-
+import { MaterialModule } from './material/material.module';
 @NgModule({
   declarations: [
     AppComponent,
-    SpotComponent,
-    SpotFormComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatFormFieldModule,
-    MatSelectModule
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
