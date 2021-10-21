@@ -7,9 +7,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule,  } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MaterialModule } from './material/material.module';
+import { SpotlistComponent } from './spot/spotlist/spotlist.component';
 @NgModule({
   declarations: [
     AppComponent,
+    SpotlistComponent,
   ],
   imports: [
     BrowserModule,
