@@ -13,3 +13,10 @@ Well, look no further than...
 
 - Search, add, create spots for yourself or within a group!
 - Filter by location, type, and more!
+
+
+
+
+### Running the Angular test ( in /spotops-ui )
+
+`>$ ng test`
