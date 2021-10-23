@@ -1,0 +1,21 @@
+.form-container {
+    /**width: 60%;**/
+    margin-left: auto;
+    margin-right: auto;  
+}
+
+.form-field-width {
+    width: 250px;
+}
+
+.address-city {
+    width: 150px;
+}
+
+.address-state {
+    width: 50px;
+}
+
+.address-zip {
+    width: 50px;
+}

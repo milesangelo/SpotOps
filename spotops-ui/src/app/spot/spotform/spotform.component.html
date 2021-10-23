@@ -1,0 +1,53 @@
+<form [formGroup]="spotFormGroup" class="form-container" (ngSubmit)="onSubmit()">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Add Spot</mat-card-title>
+            <mat-card-subtitle>Form Status: {{ spotFormGroup.status }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <div layout="row">
+                <mat-form-field class="form-field-width">
+                    <mat-label for="spot-name">Name</mat-label>
+                    <input matInput id="spot-name" type="text" placeholder="Ex. Library Handrail"
+                        formControlName="spotName">
+                </mat-form-field>
+            </div>
+            <div layout="row">
+                <mat-form-field class="form-field-width">
+                    <mat-label>Type</mat-label>
+                    <mat-select formControlName="spotType">
+                        <mat-option *ngFor="let spotType of spotTypes" [value]="spotType">{{spotType}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div formGroupName="address">
+                <p>Location</p>
+                <div layout="row">
+                    <mat-form-field class="form-field-width">
+                        <mat-label>Street address</mat-label>
+                        <input matInput type="text" placeholder="Ex. 123 Main St." formControlName="street">
+                    </mat-form-field>
+                </div>
+                <div layout="row">
+                    <mat-form-field class="address-city">
+                        <mat-label>City</mat-label>
+                        <input matInput type="text" placeholder="Ex. Philadelphia" formControlName="city">
+                    </mat-form-field>
+                    <mat-form-field class="address-state">
+                        <mat-label>State</mat-label>
+                        <input matInput type="text" placeholder="Ex. PA" formControlName="state">
+                    </mat-form-field>
+                    <mat-form-field class="address-zip">
+                        <mat-label>Zip</mat-label>
+                        <input matInput type="text" placeholder="Ex. 19121" formControlName="zip">
+                    </mat-form-field>
+                </div>
+            </div>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!spotFormGroup.valid">Submit</button>
+            <button mat-raised-button color="accent" (click)="onUpdate()">Update</button>
+            <button mat-raised-button>Cancel</button>
+        </mat-card-actions>
+    </mat-card>
+</form>
