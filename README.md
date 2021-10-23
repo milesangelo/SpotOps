@@ -17,6 +17,6 @@ Well, look no further than...
 
 
 
-### Running the Angular test
+### Running the Angular test ( in /spotops-ui )
 
 `>$ ng test`
